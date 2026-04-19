@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer un utilisateur - E-Shop Maroc</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+        <!--  CSS COMMUN  -->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #ff9900 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+      
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+            max-width: 750px;
+        }
+        h2 {
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            border-left: 5px solid #ff9900;
+            padding-left: 1rem;
+        }
+        /* Section card */
+        .section-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #667eea;
+        }
+        .section-card.role-section { border-left-color: #ef476f; }
+        .section-card.address-section { border-left-color: #06d6a0; }
+        .section-title {
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 1.2rem;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-title i { color: #ff9900; }
+        .form-label { font-weight: 600; color: #444; margin-bottom: 0.4rem; }
+        .form-label i { color: #ff9900; margin-right: 6px; }
+        .form-control, .form-select {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 0.65rem 1rem;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #ff9900;
+            box-shadow: 0 0 0 3px rgba(255,153,0,0.2);
+            outline: none;
+        }
+        .input-wrapper { position: relative; }
+        .toggle-password {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #aaa;
+            transition: color 0.3s;
+        }
+        .toggle-password:hover { color: #ff9900; }
+        /* Role selector */
+        .role-selector {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+        .role-option {
+            flex: 1;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 1rem;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .role-option:hover { border-color: #ff9900; background: #fff9e6; }
+        .role-option.selected-client {
+            border-color: #667eea;
+            background: #f0f2fe;
+        }
+        .role-option.selected-admin {
+            border-color: #ef476f;
+            background: #fef0f3;
+        }
+        .role-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+        }
+        .role-option .role-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        .role-option .role-icon.client { color: #667eea; }
+        .role-option .role-icon.admin  { color: #ef476f; }
+        .role-option .role-name { font-weight: 700; font-size: 0.95rem; color: #333; }
+        .role-option .role-desc { font-size: 0.8rem; color: #888; margin-top: 3px; }
+        .role-option .role-check {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        .role-option.selected-client .role-check { background: #667eea; border-color: #667eea; color: white; }
+        .role-option.selected-admin  .role-check { background: #ef476f; border-color: #ef476f; color: white; }
+        /* Avertissement rôle admin */
+        .admin-warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            padding: 0.8rem 1rem;
+            margin-top: 1rem;
+            font-size: 0.88rem;
+            color: #856404;
+            display: none;
+        }
+        .admin-warning.show { display: flex; gap: 8px; align-items: flex-start; }
+        /* Boutons */
+        .btn-save {
+            background: linear-gradient(135deg, #667eea, #ff7700);
+            border: none;
+            border-radius: 12px;
+            padding: 0.8rem 2.5rem;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102,126,234,0.4);
+            color: white;
+        }
+        .btn-cancel {
+            background: #f0f0f0;
+            border: none;
+            border-radius: 12px;
+            padding: 0.8rem 2rem;
+            color: #555;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        .btn-cancel:hover { background: #e0e0e0; color: #333; transform: translateY(-2px); }
+        .alert {
+            border-radius: 10px;
+            border: none;
+            border-left: 4px solid;
+            margin-bottom: 1.5rem;
+        }
+        .alert-success { background: #d4edda; border-left-color: #28a745; }
+        .alert-danger  { background: #f8d7da; border-left-color: #dc3545; }
+        .required { color: #ef476f; }
+        /* Note info */
+        .info-note {
+            background: #e8f4fd;
+            border-left: 4px solid #667eea;
+            border-radius: 8px;
+            padding: 0.8rem 1rem;
+            font-size: 0.88rem;
+            color: #2c5282;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+       <!-- Inclusion des fragments  -->
+    <div th:replace="fragments/header :: topbar"></div>
+    <div th:replace="fragments/header :: navbar"></div> 
+    
+    <div class="container">
+        <!-- Alertes -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+            <i class="fas fa-check-circle me-2"></i>
+            <span th:text="${success}">Succès !</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            <span th:text="${error}">Erreur !</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <!-- Titre -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2>
+                <i class="fas fa-user-plus text-warning me-2"></i>
+                Créer un utilisateur
+            </h2>
+            <a th:href="@{/users/admin/list}" class="btn-cancel">
+                <i class="fas fa-arrow-left"></i> Retour
+            </a>
+        </div>
+        <!-- Note info -->
+        <div class="info-note">
+            <i class="fas fa-info-circle me-2"></i>
+            Seul le <strong>Super Admin</strong> peut créer un compte Administrateur.
+            Les comptes créés ici sont immédiatement actifs.
+        </div>
+        <!-- Formulaire -->
+        <form th:action="@{/users/admin/create}" method="post" onsubmit="return validateForm()">
+            <!-- Informations personnelles -->
+            <div class="section-card">
+                <div class="section-title">
+                    <i class="fas fa-id-card"></i>
+                    Informations personnelles
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">
+                            <i class="fas fa-user"></i>Prénom <span class="required">*</span>
+                        </label>
+                        <input type="text" name="firstName" class="form-control"
+                               placeholder="Ex: Ahmed" required minlength="2">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">
+                            <i class="fas fa-user"></i>Nom <span class="required">*</span>
+                        </label>
+                        <input type="text" name="lastName" class="form-control"
+                               placeholder="Ex: Benali" required minlength="2">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">
+                            <i class="fas fa-envelope"></i>Email <span class="required">*</span>
+                        </label>
+                        <input type="email" name="email" class="form-control"
+                               placeholder="exemple@email.com" required>
+                    </div>
+                </div>
+            </div>
+            <!-- Mot de passe -->
+            <div class="section-card">
+                <div class="section-title">
+                    <i class="fas fa-lock"></i>
+                    Sécurité
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">
+                            <i class="fas fa-key"></i>Mot de passe <span class="required">*</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="password" name="password" id="password" class="form-control"
+                                   placeholder="Minimum 6 caractères" required minlength="6">
+                            <span class="toggle-password" onclick="togglePwd('password','icon1')">
+                                <i class="fas fa-eye" id="icon1"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">
+                            <i class="fas fa-key"></i>Confirmer <span class="required">*</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="password" name="confirmPassword" id="confirmPassword" class="form-control"
+                                   placeholder="Confirmez le mot de passe" required minlength="6">
+                            <span class="toggle-password" onclick="togglePwd('confirmPassword','icon2')">
+                                <i class="fas fa-eye" id="icon2"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Rôle -->
+            <div class="section-card role-section">
+                <div class="section-title">
+                    <i class="fas fa-user-tag"></i>
+                    Rôle <span class="required">*</span>
+                </div>
+                <div class="role-selector">
+                    <!-- CLIENT -->
+                    <label class="role-option selected-client" id="optionClient" onclick="selectRole('CLIENT')">
+                        <input type="radio" name="role" value="CLIENT" checked>
+                        <div class="role-check" id="checkClient">
+                            <i class="fas fa-check" style="font-size:0.7rem;"></i>
+                        </div>
+                        <i class="fas fa-user role-icon client"></i>
+                        <div class="role-name">Client</div>
+                        <div class="role-desc">Accès boutique uniquement</div>
+                    </label>
+                    <!-- ADMIN — visible uniquement si Super Admin -->
+                    <label class="role-option" id="optionAdmin"
+                         th:if="${session.user != null and session.user.email == 'admin@ecommerce.com'}"
+                           onclick="selectRole('ADMIN')">
+                        <input type="radio" name="role" value="ADMIN">
+                        <div class="role-check" id="checkAdmin"></div>
+                        <i class="fas fa-user-shield role-icon admin"></i>
+                        <div class="role-name">Administrateur</div>
+                        <div class="role-desc">Accès complet au panel</div>
+                    </label>
+                </div>
+                <!-- Avertissement si Admin sélectionné -->
+                <div class="admin-warning" id="adminWarning">
+                    <i class="fas fa-exclamation-triangle mt-1"></i>
+                    <div>
+                        <strong>Attention !</strong> Ce compte aura accès à toutes les fonctionnalités
+                        d'administration (produits, commandes, utilisateurs). Assurez-vous que c'est intentionnel.
+                    </div>
+                </div>
+            </div>
+            <!-- Adresse (optionnel) -->
+            <div class="section-card address-section">
+                <div class="section-title">
+                    <i class="fas fa-map-marker-alt"></i>
+                    Adresse <span class="text-muted fw-normal" style="font-size:0.85rem;">(optionnel)</span>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="fas fa-city"></i>Ville</label>
+                        <input type="text" name="city" class="form-control" placeholder="Ex: Casablanca">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="fas fa-map-pin"></i>Code postal</label>
+                        <input type="text" name="postalCode" class="form-control" placeholder="Ex: 20000">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label"><i class="fas fa-globe"></i>Pays</label>
+                        <select name="country" class="form-select">
+                            <option value="">Sélectionnez un pays</option>
+                            <option value="Maroc" selected>Maroc</option>
+                            <option value="Algérie">Algérie</option>
+                            <option value="Tunisie">Tunisie</option>
+                            <option value="France">France</option>
+                            <option value="Autre">Autre</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <!-- Boutons -->
+            <div class="d-flex gap-3 justify-content-end mt-2">
+                <a th:href="@{/users/admin/list}" class="btn-cancel">
+                    <i class="fas fa-times"></i> Annuler
+                </a>
+                <button type="submit" class="btn-save">
+                    <i class="fas fa-user-plus"></i> Créer l'utilisateur
+                </button>
+            </div>
+        </form>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Sélection du rôle
+        function selectRole(role) {
+            const optClient = document.getElementById('optionClient');
+            const optAdmin  = document.getElementById('optionAdmin');
+            const warning   = document.getElementById('adminWarning');
+            if (role === 'CLIENT') {
+                optClient.className = 'role-option selected-client';
+                document.getElementById('checkClient').innerHTML = '<i class="fas fa-check" style="font-size:0.7rem;"></i>';
+                if (optAdmin) {
+                    optAdmin.className = 'role-option';
+                    document.getElementById('checkAdmin').innerHTML = '';
+                }
+                warning.classList.remove('show');
+                optClient.querySelector('input').checked = true;
+            } else if (role === 'ADMIN') {
+                if (optAdmin) {
+                    optAdmin.className = 'role-option selected-admin';
+                    document.getElementById('checkAdmin').innerHTML = '<i class="fas fa-check" style="font-size:0.7rem;"></i>';
+                }
+                optClient.className = 'role-option';
+                document.getElementById('checkClient').innerHTML = '';
+                warning.classList.add('show');
+                if (optAdmin) optAdmin.querySelector('input').checked = true;
+            }
+        }
+        // Toggle mot de passe
+        function togglePwd(fieldId, iconId) {
+            const input = document.getElementById(fieldId);
+            const icon  = document.getElementById(iconId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+        // Validation avant envoi
+        function validateForm() {
+            const pwd     = document.getElementById('password').value;
+            const confirm = document.getElementById('confirmPassword').value;
+            if (pwd !== confirm) {
+                alert('❌ Les mots de passe ne correspondent pas !');
+                return false;
+            }
+            if (pwd.length < 6) {
+                alert('❌ Le mot de passe doit contenir au moins 6 caractères !');
+                return false;
+            }
+            return true;
+        }
+        // Auto-fermeture alertes
+        setTimeout(() => {
+            document.querySelectorAll('.alert').forEach(a => {
+                bootstrap.Alert.getOrCreateInstance(a).close();
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

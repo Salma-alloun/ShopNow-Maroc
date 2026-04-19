@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Header Fragment</title>
+</head>
+<body>
+    <!-- ===== TOP BAR FRAGMENT ===== -->
+    <div th:fragment="topbar">
+        <div class="top-bar">
+            <div class="container">
+                <div class="top-bar-social">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ===== NAVBAR FRAGMENT ===== -->
+    <nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-main" id="mainNavbar">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">
+                <i class="fas fa-store"></i> ShopNow.ma
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/}">
+                            <i class="fas fa-home"></i> Accueil
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/catalogue}">
+                            <i class="fas fa-th"></i> Catalogue
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/promotions}">
+                            <i class="fas fa-tags"></i> Promos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/nouveautes}">
+                            <i class="fas fa-star"></i> Nouveautés
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/contact}">
+                            <i class="fas fa-headset"></i> Contact
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="nav-icons">
+                    <!-- Recherche -->
+                    <a th:href="@{/recherche}" class="nav-icon-item">
+                        <i class="fas fa-search"></i>
+                    </a>
+                    
+                    <!-- Favoris -->
+                    <a th:href="@{/favoris}" class="nav-icon-item">
+                        <i class="fas fa-heart"></i>
+                        <span class="badge-count" id="wishlistCount">0</span>
+                    </a>
+                    
+                    <!-- Panier -->
+                    <a th:href="@{/panier}" class="nav-icon-item">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="badge-count" id="cartBadge">0</span>
+                    </a>
+                    
+                    <!-- ===== UTILISATEUR CONNECTÉ ===== -->
+                    <div th:if="${session.user != null}" style="display: flex; align-items: center; gap: 15px; margin-left: 10px;">
+                        
+                        <!-- Avatar + Dropdown -->
+                        <div style="position: relative;">
+                            <i class="fas fa-user-circle" 
+                               id="userAvatarIcon"
+                               style="font-size: 1.8rem; cursor: pointer; color: #2e4057;">
+                            </i>
+                            
+                            <!-- DROPDOWN MENU -->
+                            <div id="userDropdown" 
+                                 style="display: none; 
+                                        position: absolute; 
+                                        top: 110%; 
+                                        right: 0; 
+                                        background: white; 
+                                        border-radius: 10px; 
+                                        box-shadow: 0 10px 30px rgba(0,0,0,0.15); 
+                                        padding: 10px; 
+                                        min-width: 210px; 
+                                        z-index: 9999;
+                                        border: 1px solid #eee;">
+                                
+                                <!-- Nom utilisateur -->
+                                <div style="padding: 10px 12px; font-weight: bold; border-bottom: 1px solid #eee; color: #2e4057;">
+                                    <i class="fas fa-user" style="color: #ff6b35; margin-right: 8px;"></i>
+                                    <span th:text="${session.user.firstName + ' ' + session.user.lastName}">Utilisateur</span>
+                                </div>
+                                
+                                <!-- Mon Profil -->
+                                <a th:href="@{/users/profile}" 
+                                   style="padding: 10px 12px; display: flex; align-items: center; gap: 10px; color: #2e4057; text-decoration: none; border-radius: 5px;"
+                                   onmouseover="this.style.background='#fff4e6'"
+                                   onmouseout="this.style.background='transparent'">
+                                    <i class="fas fa-id-card" style="color: #ff6b35; width: 16px;"></i> Mon Profil
+                                </a>
+                                
+                                <!-- Mes Commandes -->
+                                <a th:href="@{/commande/mes-commandes}" 
+                                   style="padding: 10px 12px; display: flex; align-items: center; gap: 10px; color: #2e4057; text-decoration: none; border-radius: 5px;"
+                                   onmouseover="this.style.background='#fff4e6'"
+                                   onmouseout="this.style.background='transparent'">
+                                    <i class="fas fa-box" style="color: #ff6b35; width: 16px;"></i> Mes Commandes
+                                </a>
+                                
+                                <!-- Mes Favoris -->
+                                <a th:href="@{/favoris}" 
+                                   style="padding: 10px 12px; display: flex; align-items: center; gap: 10px; color: #2e4057; text-decoration: none; border-radius: 5px;"
+                                   onmouseover="this.style.background='#fff4e6'"
+                                   onmouseout="this.style.background='transparent'">
+                                    <i class="fas fa-heart" style="color: #ff6b35; width: 16px;"></i> Mes Favoris
+                                </a>
+                                <!-- ===== LIEN DASHBOARD ADMIN ===== -->
+                                <div th:if="${session.user.role == 'ADMIN'}">
+                                    <div style="border-top: 1px solid #eee; margin: 5px 0;"></div>
+                                    <a th:href="@{/users/admin/dashboard}"
+                                       style="padding: 10px 12px; display: flex; align-items: center; gap: 10px; color: #ff6b35; text-decoration: none; border-radius: 5px; font-weight: 600;"
+                                       onmouseover="this.style.background='#fff4e6'"
+                                       onmouseout="this.style.background='transparent'">
+                                        <i class="fas fa-shield-alt" style="width: 16px;"></i> Dashboard Admin
+                                    </a>
+                                </div>
+                                <!-- Séparateur -->
+                                <div style="border-top: 1px solid #eee; margin: 5px 0;"></div>
+                                
+                                <!-- Déconnexion -->
+                                <a th:href="@{/users/logout}" 
+                                   style="padding: 10px 12px; display: flex; align-items: center; gap: 10px; color: #ff6b35; text-decoration: none; border-radius: 5px; font-weight: 600;"
+                                   onmouseover="this.style.background='#fff4e6'"
+                                   onmouseout="this.style.background='transparent'">
+                                    <i class="fas fa-sign-out-alt" style="width: 16px;"></i> Déconnexion
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- Bouton Déconnexion orange -->
+                        <a th:href="@{/users/logout}" 
+                           style="background: #ff6b35; color: white; padding: 8px 16px; border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-sign-out-alt"></i> Déconnexion
+                        </a>
+                    </div>
+                    
+                    <!-- ===== UTILISATEUR NON CONNECTÉ ===== -->
+                    <div th:if="${session.user == null}" style="display: flex; gap: 10px; margin-left: 10px;">
+                        <a th:href="@{/login}" 
+                           style="background: transparent; color: #ff6b35; border: 2px solid #ff6b35; padding: 8px 16px; border-radius: 50px; font-weight: 600; font-size: 14px; text-decoration: none; display: flex; align-items: center; gap: 5px;">
+                            <i class="fas fa-sign-in-alt"></i> Connexion
+                        </a>
+                        <a th:href="@{/register}" 
+                           style="background: #ff6b35; color: white; border: 2px solid #ff6b35; padding: 8px 16px; border-radius: 50px; font-weight: 600; font-size: 14px; text-decoration: none; display: flex; align-items: center; gap: 5px;">
+                            <i class="fas fa-user-plus"></i> Inscription
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- ===== SCRIPT DE GESTION DU DROPDOWN ===== -->
+    <script th:fragment="dropdownScript">
+        document.addEventListener('DOMContentLoaded', function() {
+            const avatarIcon = document.getElementById('userAvatarIcon');
+            const dropdown = document.getElementById('userDropdown');
+            if (avatarIcon && dropdown) {
+                avatarIcon.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+                });
+                document.addEventListener('click', function(e) {
+                    if (!dropdown.contains(e.target) && e.target !== avatarIcon) {
+                        dropdown.style.display = 'none';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

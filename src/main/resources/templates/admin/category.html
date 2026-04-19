@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des catégories - E-Shop Maroc</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+          <!--  CSS COMMUN  -->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+   
+    
+    <style>
+        /* Vos styles existants - inchangés */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+   
+  
+        .user-banner {
+            background: #fff3cd;
+            padding: 0.8rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ffeeba;
+        }
+        .user-welcome {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .user-welcome i {
+            color: #ff9900;
+        }
+        .user-welcome strong {
+            color: #232f3e;
+        }
+        .user-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        .user-action-link {
+            text-decoration: none;
+            color: #232f3e;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+        .user-action-link:hover {
+            color: #ff9900;
+        }
+        .container-admin {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        .page-header {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .page-header h1 {
+            font-size: 2rem;
+            color: #232f3e;
+            margin: 0;
+        }
+        .page-header h1 i {
+            color: #ff9900;
+            margin-right: 10px;
+        }
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        .btn-primary {
+            background: #ff9900;
+            color: #232f3e;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary:hover {
+            background: #e68900;
+            color: white;
+        }
+        .btn-secondary {
+            background: #667eea;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-secondary:hover {
+            background: #5a6fd8;
+        }
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .category-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            border-left: 5px solid #ff9900;
+        }
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .category-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #232f3e;
+        }
+        .category-name i {
+            color: #ff9900;
+            margin-right: 8px;
+        }
+        .category-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .btn-action {
+            width: 35px;
+            height: 35px;
+            border-radius: 5px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-edit {
+            background: #667eea20;
+            color: #667eea;
+        }
+        .btn-edit:hover {
+            background: #667eea;
+            color: white;
+        }
+        .btn-delete {
+            background: #ef476f20;
+            color: #ef476f;
+        }
+        .btn-delete:hover {
+            background: #ef476f;
+            color: white;
+        }
+        .category-description {
+            color: #666;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+        .category-stats {
+            display: flex;
+            gap: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #f0f0f0;
+        }
+        .stat-item {
+            flex: 1;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #ff9900;
+        }
+        .stat-label {
+            font-size: 0.85rem;
+            color: #999;
+        }
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+        }
+        .modal-header {
+            background: linear-gradient(135deg, #232f3e, #131921);
+            color: white;
+            border-radius: 15px 15px 0 0;
+            padding: 1.5rem;
+        }
+        .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+        }
+        .modal-body {
+            padding: 2rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #555;
+        }
+        .form-group label i {
+            color: #ff9900;
+            margin-right: 8px;
+        }
+        .form-control {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        .form-control:focus {
+            border-color: #ff9900;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255,153,0,0.1);
+        }
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .footer-main {
+            background: #232f3e;
+            color: #fff;
+            padding: 2rem 2rem 1rem;
+            margin-top: 3rem;
+        }
+        .footer-bottom {
+            text-align: center;
+            padding-top: 1rem;
+            border-top: 1px solid #3a4553;
+            color: #999;
+        }
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .user-banner {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Inclusion des fragments  -->
+    <div th:replace="fragments/header :: topbar"></div>
+    <div th:replace="fragments/header :: navbar"></div> 
+    
+    <!-- Main Content -->
+    <div class="container-admin">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>
+                <i class="fas fa-tags"></i>
+                Gestion des catégories
+            </h1>
+            <div class="header-actions">
+                <button class="btn-primary" data-bs-toggle="modal" data-bs-target="#categoryModal" onclick="resetCategoryForm()">
+                    <i class="fas fa-plus-circle"></i>
+                    Nouvelle catégorie
+                </button>
+                <a th:href="@{/users/admin/dashboard}" class="btn-secondary">
+                    <i class="fas fa-arrow-left"></i>
+                    Retour
+                </a>
+            </div>
+        </div>
+        <!-- Categories Grid -->
+        <div class="categories-grid">
+            <div class="category-card" th:each="category : ${categories}">
+                <div class="category-header">
+                    <span class="category-name">
+                        <i class="fas fa-folder"></i>
+                        <span th:text="${category.name}">Électronique</span>
+                    </span>
+                    <div class="category-actions">
+                        <button class="btn-action btn-edit" th:onclick="'editCategory(' + ${category.id} + ')'" title="Modifier">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-action btn-delete" th:onclick="'deleteCategory(' + ${category.id} + ')'" title="Supprimer">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="category-description" th:text="${category.description}">
+                    Description de la catégorie...
+                </div>
+                <div class="category-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" th:text="${category.products != null ? #lists.size(category.products) : 0}">5</div>
+                        <div class="stat-label">Produits</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" th:text="${#dates.format(category.createdAt, 'dd/MM/yyyy')}">01/03/2026</div>
+                        <div class="stat-label">Créée le</div>
+                    </div>
+                </div>
+            </div>
+            <!-- Message si aucune catégorie -->
+            <div th:if="${categories == null or categories.empty}" class="text-center" style="grid-column: 1/-1; padding: 3rem;">
+                <i class="fas fa-folder-open fa-4x text-muted mb-3"></i>
+                <h3 class="text-muted">Aucune catégorie</h3>
+                <p class="text-muted mb-3">Commencez par créer votre première catégorie</p>
+                <button class="btn-primary" data-bs-toggle="modal" data-bs-target="#categoryModal" onclick="resetCategoryForm()">
+                    <i class="fas fa-plus-circle"></i> Créer une catégorie
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Category Modal (Ajout/Modification) -->
+    <div class="modal fade" id="categoryModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="categoryModalTitle">
+                        <i class="fas fa-plus-circle"></i>
+                        <span id="categoryModalTitleText">Ajouter une catégorie</span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="categoryForm" th:action="@{/admin/categories/save}" method="post">
+                    <div class="modal-body">
+                        <input type="hidden" name="id" id="categoryId" value="-1">
+                        
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-tag"></i>
+                                Nom de la catégorie
+                            </label>
+                            <input type="text" name="name" id="categoryName" class="form-control" required 
+                                   placeholder="Ex: Électronique, Vêtements, Livres...">
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-align-left"></i>
+                                Description
+                            </label>
+                            <textarea name="description" id="categoryDescription" class="form-control" rows="4" 
+                                      placeholder="Description de la catégorie..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i>
+                            Enregistrer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteCategoryModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Confirmer la suppression
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Êtes-vous sûr de vouloir supprimer cette catégorie ?</p>
+                    <p class="text-danger"><strong>Cette action est irréversible !</strong></p>
+                    <p class="text-warning">
+                        <i class="fas fa-info-circle"></i>
+                        Les produits de cette catégorie ne seront pas supprimés mais n'auront plus de catégorie.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <a href="#" id="confirmCategoryDelete" class="btn btn-danger">
+                        <i class="fas fa-trash"></i>
+                        Supprimer
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Footer -->
+    <footer class="footer-main">
+        <div class="footer-bottom">
+            <p>&copy; 2026 E-Shop Maroc - Gestion des catégories. Tous droits réservés.</p>
+        </div>
+    </footer>
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Récupérer le contexte de l'application depuis une balise meta ou le définir manuellement
+        const contextPath = '/WebMVCRepo-master';
+        
+        // Reset category form for new category
+        function resetCategoryForm() {
+            document.getElementById('categoryModalTitleText').textContent = 'Ajouter une catégorie';
+            document.getElementById('categoryId').value = '-1';
+            document.getElementById('categoryName').value = '';
+            document.getElementById('categoryDescription').value = '';
+        }
+        // Edit category - CORRIGÉ avec contexte
+        function editCategory(id) {
+            // Utiliser fetch avec l'URL complète incluant le contexte
+            fetch(contextPath + '/admin/categories/' + id)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erreur réseau: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(category => {
+                    document.getElementById('categoryModalTitleText').textContent = 'Modifier la catégorie';
+                    document.getElementById('categoryId').value = category.id;
+                    document.getElementById('categoryName').value = category.name;
+                    document.getElementById('categoryDescription').value = category.description;
+                    
+                    new bootstrap.Modal(document.getElementById('categoryModal')).show();
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    alert('Erreur lors du chargement de la catégorie: ' + error.message);
+                });
+        }
+        // Delete category - CORRIGÉ avec contexte
+        function deleteCategory(id) {
+            // Construire l'URL complète avec le contexte
+            const deleteUrl = contextPath + '/admin/categories/delete/' + id;
+            document.getElementById('confirmCategoryDelete').href = deleteUrl;
+            new bootstrap.Modal(document.getElementById('deleteCategoryModal')).show();
+        }
+        // Alternative: Utiliser une approche plus élégante avec une fonction helper
+        function getBaseUrl() {
+            // Cette fonction détecte automatiquement le contexte
+            const base = window.location.pathname.split('/')[1];
+            return '/' + base;
+        }
+    </script>
+</body>
+</html>

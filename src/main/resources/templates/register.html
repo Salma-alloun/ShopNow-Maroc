@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription - E-Shop Maroc</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #fff5e6 0%, #fff9e6 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        /* ===== TOP BAR STYLES ===== */
+        .top-bar {
+            background: linear-gradient(135deg, #FF6B35, #E54E1E);
+            padding: 8px 0;
+            color: white;
+        }
+        .top-bar-social {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+        .top-bar-social a {
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            text-decoration: none;
+        }
+        .top-bar-social a:hover {
+            background: #FFD93D;
+            color: #FF6B35;
+            transform: translateY(-2px);
+        }
+        /* ===== NAVBAR STYLES ===== */
+        .navbar-main {
+            background: white;
+            padding: 15px 0;
+            box-shadow: 0 5px 20px rgba(255, 107, 53, 0.15);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #FF6B35 !important;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+        .navbar-brand i {
+            color: #FFD93D;
+            font-size: 1.8rem;
+        }
+        .navbar-nav .nav-link {
+            color: #2E4057 !important;
+            font-weight: 500;
+            padding: 8px 15px !important;
+            border-radius: 50px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        .navbar-nav .nav-link i {
+            color: #FF6B35;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        .navbar-nav .nav-link:hover {
+            background: linear-gradient(135deg, #FF6B35, #FFD93D);
+            color: white !important;
+            transform: translateY(-2px);
+        }
+        .navbar-nav .nav-link:hover i {
+            color: white;
+        }
+        .navbar-nav .nav-link.active {
+            background: linear-gradient(135deg, #FF6B35, #FFD93D);
+            color: white !important;
+        }
+        .navbar-nav .nav-link.active i {
+            color: white;
+        }
+        /* ===== NAV ICONS ===== */
+        .nav-icons {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .nav-icon-item {
+            position: relative;
+            color: #2E4057;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #FFF9F5;
+            text-decoration: none;
+        }
+        .nav-icon-item:hover {
+            background: linear-gradient(135deg, #FF6B35, #FFD93D);
+            color: white;
+            transform: translateY(-2px);
+        }
+        .badge-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #FF6B35;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 600;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+        /* ===== BUTTONS ===== */
+        .btn-login-nav {
+            background: transparent !important;
+            color: #FF6B35 !important;
+            border: 2px solid #FF6B35 !important;
+            padding: 8px 20px !important;
+            border-radius: 50px !important;
+            font-weight: 600 !important;
+            font-size: 0.95rem !important;
+            transition: all 0.3s !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            text-decoration: none !important;
+        }
+        .btn-login-nav:hover {
+            background: #FF6B35 !important;
+            color: white !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3) !important;
+        }
+        .btn-register-nav {
+            background: linear-gradient(135deg, #FF6B35, #FFA500) !important;
+            color: white !important;
+            border: none !important;
+            padding: 8px 20px !important;
+            border-radius: 50px !important;
+            font-weight: 600 !important;
+            font-size: 0.95rem !important;
+            transition: all 0.3s !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            text-decoration: none !important;
+        }
+        .btn-register-nav:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3) !important;
+        }
+        /* ===== FOOTER STYLES ===== */
+        .footer-main {
+            background: white;
+            padding: 60px 0 0;
+            margin-top: auto;
+            box-shadow: 0 -5px 20px rgba(255, 107, 53, 0.1);
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        .footer-col h4 {
+            color: #FF6B35;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        .footer-col h4::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, #FF6B35, #FFD93D);
+            border-radius: 3px;
+        }
+        .footer-col p {
+            color: #6c757d;
+            line-height: 1.8;
+            margin-bottom: 25px;
+        }
+        .social-links {
+            display: flex;
+            gap: 10px;
+        }
+        .social-links a {
+            width: 35px;
+            height: 35px;
+            background: #FFF9F5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FF6B35;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .social-links a:hover {
+            background: linear-gradient(135deg, #FF6B35, #FFD93D);
+            color: white;
+            transform: translateY(-3px);
+        }
+        .footer-col ul {
+            list-style: none;
+            padding: 0;
+        }
+        .footer-col ul li {
+            margin-bottom: 12px;
+        }
+        .footer-col ul li a {
+            color: #6c757d;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .footer-col ul li a i {
+            color: #FF6B35;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+        .footer-col ul li a:hover {
+            color: #FF6B35;
+            padding-left: 5px;
+        }
+        .footer-col ul li a:hover i {
+            color: #FFD93D;
+            transform: translateX(3px);
+        }
+        .footer-contact li {
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .footer-contact li i {
+            color: #FF6B35;
+            width: 20px;
+        }
+        .delivery-badge {
+            background: linear-gradient(135deg, #FF6B35, #FFD93D);
+            color: white !important;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: 500;
+            margin-top: 10px;
+        }
+        .delivery-badge i {
+            color: white !important;
+        }
+        .payment-methods {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 30px 0;
+            border-top: 2px solid #FFF9F5;
+            font-size: 2rem;
+            color: #FF6B35;
+        }
+        .footer-bottom {
+            background: linear-gradient(135deg, #FF6B35, #E54E1E);
+            padding: 20px 0;
+            text-align: center;
+            color: white;
+        }
+        .footer-bottom p {
+            margin: 0;
+            font-size: 0.95rem;
+        }
+        /* ===== REGISTER CONTAINER ===== */
+        .main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+        .register-container {
+            max-width: 650px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(255, 107, 53, 0.2);
+            overflow: hidden;
+            animation: slideUp 0.5s ease;
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .register-header {
+            background: linear-gradient(135deg, #FF6B35 0%, #FFA500 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .register-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .register-header i {
+            font-size: 3rem;
+            color: #FFE55C;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+        .register-header h2 {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        .register-header p {
+            color: rgba(255,255,255,0.9);
+            font-size: 0.9rem;
+            position: relative;
+            z-index: 1;
+        }
+        .register-body {
+            padding: 2rem;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+            font-size: 0.95rem;
+        }
+        .form-group label i {
+            color: #FF6B35;
+            margin-right: 8px;
+            width: 20px;
+        }
+        .input-wrapper {
+            position: relative;
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #FFE5D9;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-family: 'Poppins', sans-serif;
+            background: #FFF9F5;
+        }
+        .form-control:focus {
+            border-color: #FF6B35;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+            background: white;
+        }
+        .form-control::placeholder {
+            color: #FFB08C;
+        }
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23FF6B35' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 16px;
+        }
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #FFB08C;
+            transition: color 0.3s;
+            background: white;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        .toggle-password:hover {
+            color: #FF6B35;
+            background: #FFF0E8;
+        }
+        .role-info {
+            background: linear-gradient(135deg, #FFF4E5, #FFE5D9);
+            border: 1px solid #FF6B35;
+            border-radius: 10px;
+            padding: 12px 15px;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+            color: #FF6B35;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 107, 53, 0.2); }
+            70% { box-shadow: 0 0 0 5px rgba(255, 107, 53, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 107, 53, 0); }
+        }
+        .role-info i {
+            color: #FF6B35;
+            font-size: 1.2rem;
+        }
+        .role-info strong {
+            color: #FF6B35;
+            font-weight: 600;
+        }
+        .terms-group {
+            margin: 2rem 0;
+        }
+        .terms-checkbox {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            color: #666;
+            font-size: 0.95rem;
+        }
+        .terms-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-top: 2px;
+            accent-color: #FF6B35;
+        }
+        .terms-checkbox a {
+            color: #FF6B35;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        .terms-checkbox a:hover {
+            color: #FFA500;
+            text-decoration: underline;
+        }
+        .btn-register {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #FF6B35, #FFA500);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-register::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 107, 53, 0.3);
+        }
+        .btn-register:hover::before {
+            left: 100%;
+        }
+        .btn-register i {
+            font-size: 1.1rem;
+            transition: transform 0.3s;
+        }
+        .btn-register:hover i {
+            transform: translateX(5px);
+        }
+        .alert-error, .alert-success {
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .alert-error {
+            background: #FFE5E5;
+            color: #D32F2F;
+            border-left: 4px solid #D32F2F;
+        }
+        .alert-success {
+            background: #FFF4E5;
+            color: #FF6B35;
+            border-left: 4px solid #FF6B35;
+        }
+        .alert-error i, .alert-success i {
+            font-size: 1.2rem;
+        }
+        .login-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #666;
+            font-size: 0.95rem;
+        }
+        .login-link a {
+            color: #FF6B35;
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.3s;
+            position: relative;
+        }
+        .login-link a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #FF6B35, #FFA500);
+            transition: width 0.3s;
+        }
+        .login-link a:hover {
+            color: #FFA500;
+        }
+        .login-link a:hover::after {
+            width: 100%;
+        }
+        .back-home {
+            text-align: center;
+            margin-top: 1rem;
+        }
+        .back-home a {
+            color: #FFB08C;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .back-home a:hover {
+            color: #FF6B35;
+            transform: translateX(-5px);
+        }
+        /* Loading state */
+        .btn-register.loading {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+        .btn-register.loading i {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        /* Validation styles */
+        .form-control.valid {
+            border-color: #4CAF50;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%234CAF50' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 16px;
+        }
+        .form-control.invalid {
+            border-color: #D32F2F;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23D32F2F' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'%3E%3C/circle%3E%3Cline x1='12' y1='8' x2='12' y2='12'%3E%3C/line%3E%3Cline x1='12' y1='16' x2='12.01' y2='16'%3E%3C/line%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 16px;
+        }
+        /* Responsive */
+        @media (max-width: 992px) {
+            .navbar-collapse {
+                background: white;
+                padding: 20px;
+                border-radius: 15px;
+                margin-top: 15px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            }
+            .nav-icons {
+                margin-top: 15px;
+                padding-top: 15px;
+                border-top: 2px solid #FFF9F5;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 768px) {
+            .top-bar-social {
+                justify-content: center;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            .footer-col h4::after {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            .social-links {
+                justify-content: center;
+            }
+            .footer-col ul li a {
+                justify-content: center;
+            }
+            .footer-contact li {
+                justify-content: center;
+            }
+            .payment-methods {
+                flex-wrap: wrap;
+            }
+        }
+        @media (max-width: 576px) {
+            .main-content {
+                padding: 20px 15px;
+            }
+            .register-container {
+                max-width: 100%;
+            }
+            .register-header {
+                padding: 1.5rem;
+            }
+            .register-header h2 {
+                font-size: 1.3rem;
+            }
+            .register-body {
+                padding: 1.5rem;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Inclusion du header2 (sans panier) -->
+    <div th:replace="fragments/header2 :: topbar"></div>
+    <div th:replace="fragments/header2 :: navbar"></div>
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="register-container">
+            <div class="register-header">
+                <i class="fas fa-user-plus"></i>
+                <h2>Créer un compte</h2>
+                <p>Rejoignez E-Shop Maroc pour une expérience d'achat unique</p>
+            </div>
+            <div class="register-body">
+                <!-- Message d'erreur -->
+                <div class="alert-error" th:if="${error != null}">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span th:text="${error}">Erreur</span>
+                </div>
+                <!-- Message de succès -->
+                <div class="alert-success" th:if="${success != null}">
+                    <i class="fas fa-check-circle"></i>
+                    <span th:text="${success}">Succès</span>
+                </div>
+                <!-- Info rôle automatique -->
+                <div class="role-info">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Tout nouveau compte est créé avec le rôle <strong>Client</strong> par défaut.</span>
+                </div>
+                <form th:action="@{/users/register}" method="post" th:object="${registerDTO}"
+                      onsubmit="return validateForm()" id="registerForm">
+                    <!-- Prénom / Nom -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-user"></i>Prénom</label>
+                            <input type="text" name="firstName" class="form-control"
+                                   placeholder="Votre prénom" required minlength="2" id="firstName">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-user"></i>Nom</label>
+                            <input type="text" name="lastName" class="form-control"
+                                   placeholder="Votre nom" required minlength="2" id="lastName">
+                        </div>
+                    </div>
+                    <!-- Email -->
+                    <div class="form-group">
+                        <label><i class="fas fa-envelope"></i>Adresse email</label>
+                        <input type="email" name="email" class="form-control"
+                               placeholder="exemple@email.com" required id="email">
+                    </div>
+                    <!-- Mot de passe / Confirmation -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-lock"></i>Mot de passe</label>
+                            <div class="input-wrapper">
+                                <input type="password" name="password" id="password" class="form-control"
+                                       placeholder="Minimum 6 caractères" required minlength="6">
+                                <span class="toggle-password" onclick="togglePassword('password', 'icon1')">
+                                    <i class="fas fa-eye" id="icon1"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-lock"></i>Confirmer</label>
+                            <div class="input-wrapper">
+                                <input type="password" name="confirmPassword" id="confirmPassword" class="form-control"
+                                       placeholder="Confirmez" required minlength="6">
+                                <span class="toggle-password" onclick="togglePassword('confirmPassword', 'icon2')">
+                                    <i class="fas fa-eye" id="icon2"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Ville / Code postal -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><i class="fas fa-city"></i>Ville</label>
+                            <input type="text" name="city" class="form-control"
+                                   placeholder="Ville" required id="city">
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-map-pin"></i>Code postal</label>
+                            <input type="text" name="postalCode" class="form-control"
+                                   placeholder="Code postal" required id="postalCode">
+                        </div>
+                    </div>
+                    <!-- Pays -->
+                    <div class="form-group">
+                        <label><i class="fas fa-globe"></i>Pays</label>
+                        <select name="country" class="form-control" required id="country">
+                            <option value="">Sélectionnez votre pays</option>
+                            <option value="Maroc" selected>🇲🇦 Maroc</option>
+                            <option value="Algérie">🇩🇿 Algérie</option>
+                            <option value="Tunisie">🇹🇳 Tunisie</option>
+                            <option value="France">🇫🇷 France</option>
+                            <option value="Autre">🌍 Autre</option>
+                        </select>
+                    </div>
+                    <!-- CGU -->
+                    <div class="terms-group">
+                        <label class="terms-checkbox">
+                            <input type="checkbox" id="acceptTerms" required>
+                            <span>J'accepte les <a href="#">conditions générales</a>
+                            et la <a href="#">politique de confidentialité</a></span>
+                        </label>
+                    </div>
+                    <button type="submit" class="btn-register" id="submitBtn">
+                        <i class="fas fa-user-plus"></i>
+                        <span>S'inscrire</span>
+                    </button>
+                </form>
+                <div class="login-link">
+                    Déjà un compte ?
+                    <a th:href="@{/users/login}">Connectez-vous</a>
+                </div>
+                <div class="back-home">
+                    <a th:href="@{/}">
+                        <i class="fas fa-arrow-left"></i>
+                        Retour à l'accueil
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Inclusion du footer -->
+    <div th:replace="fragments/footer :: footer"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Toggle affichage mot de passe
+        function togglePassword(fieldId, iconId) {
+            const input = document.getElementById(fieldId);
+            const icon = document.getElementById(iconId);
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+        // Validation côté client
+        function validateForm() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            if (password !== confirmPassword) {
+                alert('❌ Les mots de passe ne correspondent pas !');
+                return false;
+            }
+            if (password.length < 6) {
+                alert('❌ Le mot de passe doit contenir au moins 6 caractères !');
+                return false;
+            }
+            return true;
+        }
+        // Loading state on submit
+        document.getElementById('registerForm')?.addEventListener('submit', function(e) {
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.classList.add('loading');
+            submitBtn.innerHTML = '<i class="fas fa-spinner"></i> Inscription en cours...';
+        });
+        // Email validation
+        document.getElementById('email')?.addEventListener('blur', function() {
+            const email = this.value;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            if (email && !emailRegex.test(email)) {
+                this.classList.add('invalid');
+                this.classList.remove('valid');
+            } else if (email) {
+                this.classList.add('valid');
+                this.classList.remove('invalid');
+            }
+        });
+        // Password match validation
+        document.getElementById('confirmPassword')?.addEventListener('input', function() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = this.value;
+            
+            if (confirmPassword && password !== confirmPassword) {
+                this.classList.add('invalid');
+                this.classList.remove('valid');
+            } else if (confirmPassword && password === confirmPassword) {
+                this.classList.add('valid');
+                this.classList.remove('invalid');
+            }
+        });
+        // Remove validation styling on focus
+        document.querySelectorAll('.form-control').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.classList.remove('invalid', 'valid');
+            });
+        });
+        // Prevent double submission
+        let submitted = false;
+        document.getElementById('registerForm')?.addEventListener('submit', function(e) {
+            if (submitted) {
+                e.preventDefault();
+                return;
+            }
+            submitted = true;
+        });
+    </script>
+</body>
+</html>

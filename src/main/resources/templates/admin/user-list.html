@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des utilisateurs - E-Shop Maroc</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+          <!--  CSS COMMUN  -->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #ff9900 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .navbar-brand { font-size: 1.5rem; font-weight: bold; }
+        .navbar-brand i { color: #ff9900; }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+        h2 {
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            border-left: 5px solid #ff9900;
+            padding-left: 1rem;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #ff7700);
+            border: none;
+            border-radius: 10px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102,126,234,0.4);
+        }
+        .btn-warning {
+            background: linear-gradient(135deg, #ff9900, #ff7700);
+            border: none;
+            color: white;
+            border-radius: 8px;
+            padding: 0.4rem 0.8rem;
+            transition: all 0.3s;
+        }
+        .btn-warning:hover { transform: translateY(-2px); color: white; }
+        .btn-danger {
+            background: linear-gradient(135deg, #ef476f, #d63e62);
+            border: none;
+            border-radius: 8px;
+            padding: 0.4rem 0.8rem;
+            transition: all 0.3s;
+        }
+        .btn-danger:hover { transform: translateY(-2px); }
+        .btn-success {
+            background: linear-gradient(135deg, #06d6a0, #05b589);
+            border: none;
+            border-radius: 8px;
+            padding: 0.4rem 0.8rem;
+            transition: all 0.3s;
+        }
+        .btn-success:hover { transform: translateY(-2px); }
+        .btn-secondary {
+            border-radius: 8px;
+            padding: 0.4rem 0.8rem;
+            transition: all 0.3s;
+        }
+        .table {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        .table thead {
+            background: linear-gradient(135deg, #232f3e, #131921);
+            color: white;
+        }
+        .table th { padding: 1rem; font-weight: 600; }
+        .table td { padding: 0.8rem 1rem; vertical-align: middle; }
+        .table tbody tr:hover { background: #f8f9fa; transition: all 0.3s; }
+        /* Avatar utilisateur */
+        .user-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            color: white;
+            flex-shrink: 0;
+        }
+        .avatar-admin  { background: linear-gradient(135deg, #ef476f, #d63e62); }
+        .avatar-client { background: linear-gradient(135deg, #667eea, #764ba2); }
+        /* Badges rôle */
+        .badge-role {
+            padding: 0.4rem 0.9rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+        .role-admin  { background: #fde8ec; color: #c0243d; }
+        .role-client { background: #e8eafd; color: #3a4abf; }
+        /* Badges statut */
+        .badge-status {
+            padding: 0.4rem 0.9rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+        .status-active   { background: #d4edda; color: #155724; }
+        .status-inactive { background: #f8d7da; color: #721c24; }
+        /* Super Admin badge */
+        .super-admin-badge {
+            font-size: 0.7rem;
+            background: linear-gradient(135deg, #ff9900, #ff7700);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 6px;
+            font-weight: 600;
+        }
+        /* Stats cards */
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.2rem 1.5rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            border-left: 5px solid;
+            transition: transform 0.3s;
+        }
+        .stat-card:hover { transform: translateY(-3px); }
+        .stat-card.total  { border-color: #667eea; }
+        .stat-card.admins { border-color: #ef476f; }
+        .stat-card.clients{ border-color: #06d6a0; }
+        .stat-card.active { border-color: #ff9900; }
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: white;
+        }
+        .stat-icon.total   { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .stat-icon.admins  { background: linear-gradient(135deg, #ef476f, #d63e62); }
+        .stat-icon.clients { background: linear-gradient(135deg, #06d6a0, #05b589); }
+        .stat-icon.active  { background: linear-gradient(135deg, #ff9900, #ff7700); }
+        .stat-info .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #333;
+            line-height: 1;
+        }
+        .stat-info .stat-label {
+            font-size: 0.85rem;
+            color: #888;
+            margin-top: 2px;
+        }
+        /* Filtres */
+        .filter-bar {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .filter-bar .form-control,
+        .filter-bar .form-select {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s;
+        }
+        .filter-bar .form-control:focus,
+        .filter-bar .form-select:focus {
+            border-color: #ff9900;
+            box-shadow: 0 0 0 3px rgba(255,153,0,0.2);
+        }
+        .alert {
+            border-radius: 10px;
+            border: none;
+            border-left: 4px solid;
+            margin-bottom: 1.5rem;
+        }
+        .alert-success { background: #d4edda; border-left-color: #28a745; }
+        .alert-danger  { background: #f8d7da; border-left-color: #dc3545; }
+        /* Modal */
+        .modal-content {
+            border-radius: 20px;
+            border: none;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .modal-header {
+            background: linear-gradient(135deg, #232f3e, #131921);
+            color: white;
+            border-radius: 20px 20px 0 0;
+            padding: 1.5rem;
+        }
+        .modal-header.bg-danger { background: linear-gradient(135deg, #ef476f, #d63e62) !important; border-radius: 20px 20px 0 0; }
+        .modal-header .btn-close { filter: brightness(0) invert(1); }
+        .modal-body { padding: 2rem; }
+        .modal-footer { padding: 1.5rem; border-top: 2px solid #f0f0f0; }
+        .form-label { font-weight: 600; color: #333; margin-bottom: 0.5rem; }
+        .form-label i { color: #ff9900; margin-right: 8px; }
+        .form-control, .form-select {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 0.6rem 1rem;
+            transition: all 0.3s;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #ff9900;
+            box-shadow: 0 0 0 3px rgba(255,153,0,0.2);
+        }
+        /* Tooltip actions */
+        .action-btns { display: flex; gap: 5px; flex-wrap: wrap; }
+        @media (max-width: 768px) {
+            .filter-bar { flex-direction: column; }
+            .action-btns { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+        <!-- Inclusion des fragments  -->
+    <div th:replace="fragments/header :: topbar"></div>
+    <div th:replace="fragments/header :: navbar"></div> 
+    
+    <div class="container">
+        <!-- Alertes -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+            <i class="fas fa-check-circle me-2"></i>
+            <span th:text="${success}">Opération réussie !</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            <span th:text="${error}">Erreur !</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <!-- Titre + Bouton -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2>
+                <i class="fas fa-users text-warning me-2"></i>
+                Gestion des utilisateurs
+            </h2>
+            <a th:href="@{/users/admin/create}" class="btn btn-primary">
+                <i class="fas fa-user-plus me-2"></i>
+                Nouvel utilisateur
+            </a>
+        </div>
+        <!-- Stats -->
+        <div class="row g-3 mb-2">
+            <div class="col-6 col-md-3">
+                <div class="stat-card total">
+                    <div class="stat-icon total"><i class="fas fa-users"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-number" th:text="${totalUsers}">0</div>
+                        <div class="stat-label">Total utilisateurs</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card admins">
+                    <div class="stat-icon admins"><i class="fas fa-user-shield"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-number" th:text="${totalAdmins}">0</div>
+                        <div class="stat-label">Administrateurs</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card clients">
+                    <div class="stat-icon clients"><i class="fas fa-user-tag"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-number" th:text="${totalClients}">0</div>
+                        <div class="stat-label">Clients</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card active">
+                    <div class="stat-icon active"><i class="fas fa-user-check"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-number" th:text="${activeUsers}">0</div>
+                        <div class="stat-label">Actifs</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Barre de filtre -->
+        <div class="filter-bar">
+            <i class="fas fa-filter text-warning"></i>
+            <input type="text" id="searchInput" class="form-control" style="max-width:250px;"
+                   placeholder="Rechercher par nom ou email...">
+            <select id="roleFilter" class="form-select" style="max-width:160px;">
+                <option value="">Tous les rôles</option>
+                <option value="ADMIN">Administrateurs</option>
+                <option value="CLIENT">Clients</option>
+            </select>
+            <select id="statusFilter" class="form-select" style="max-width:160px;">
+                <option value="">Tous les statuts</option>
+                <option value="true">Actifs</option>
+                <option value="false">Inactifs</option>
+            </select>
+            <button class="btn btn-outline-secondary btn-sm" onclick="resetFilters()">
+                <i class="fas fa-redo me-1"></i> Réinitialiser
+            </button>
+        </div>
+        <!-- Tableau -->
+        <div class="table-responsive">
+            <table class="table table-hover" id="usersTable">
+                <thead>
+                    <tr>
+                        <th>#ID</th>
+                        <th>Utilisateur</th>
+                        <th>Email</th>
+                        <th>Rôle</th>
+                        <th>Statut</th>
+                        <th>Créé le</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="u : ${users}"
+                        th:attr="data-role=${u.role}, data-active=${u.active},
+                                 data-search=${u.fullName + ' ' + u.email}">
+                        <!-- ID -->
+                        <td><strong>#<span th:text="${u.id}">1</span></strong></td>
+                        <!-- Avatar + Nom -->
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="user-avatar"
+                                     th:classappend="${u.role == 'ADMIN'} ? 'avatar-admin' : 'avatar-client'"
+                                     th:text="${#strings.substring(u.firstName,0,1) + #strings.substring(u.lastName,0,1)}">
+                                    AB
+                                </div>
+                                <div>
+                                    <div class="fw-600">
+                                        <span th:text="${u.fullName}">Nom Prénom</span>
+                                        <!-- Badge Super Admin -->
+                                        <span th:if="${u.email == 'admin@admin.com'}"
+                                              class="super-admin-badge">
+                                            <i class="fas fa-star"></i> SUPER
+                                        </span>
+                                    </div>
+                                    <small class="text-muted" th:text="${u.email}">email@ex.com</small>
+                                </div>
+                            </div>
+                        </td>
+                        <!-- Email (caché sur mobile) -->
+                        <td class="d-none d-md-table-cell" th:text="${u.email}">email</td>
+                        <!-- Rôle -->
+                        <td>
+                            <span class="badge-role"
+                                  th:classappend="${u.role == 'ADMIN'} ? 'role-admin' : 'role-client'"
+                                  th:text="${u.role}">CLIENT</span>
+                        </td>
+                        <!-- Statut -->
+                        <td>
+                            <span class="badge-status"
+                                  th:classappend="${u.active} ? 'status-active' : 'status-inactive'">
+                                <i th:classappend="${u.active} ? 'fas fa-check-circle' : 'fas fa-times-circle'" class="fas me-1"></i>
+                                <span th:text="${u.active} ? 'Actif' : 'Inactif'">Actif</span>
+                            </span>
+                        </td>
+                        <!-- Date création -->
+                        <td>
+                            <small th:text="${#dates.format(u.createdAt, 'dd/MM/yyyy')}">01/01/2024</small>
+                        </td>
+                        <!-- Actions -->
+                        <td>
+                            <div class="action-btns">
+                                <!-- Modifier -->
+                                <a th:href="@{/users/admin/edit/{id}(id=${u.id})}"
+                                   class="btn btn-warning btn-sm" title="Modifier">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <!-- Activer / Désactiver -->
+                                <a th:href="@{/users/admin/toggle-status/{id}(id=${u.id})}"
+                                   th:if="${u.email != 'admin@admin.com'}"
+                                   class="btn btn-sm"
+                                   th:classappend="${u.active} ? 'btn-secondary' : 'btn-success'"
+                                   th:title="${u.active} ? 'Désactiver' : 'Activer'">
+                                    <i th:classappend="${u.active} ? 'fas fa-lock' : 'fas fa-unlock'" class="fas"></i>
+                                </a>
+                                <!-- Promouvoir en Admin (Super Admin uniquement, sur un CLIENT) -->
+                                <a th:if="${u.role == 'CLIENT' and session.user.email == 'admin@admin.com'}"
+                                   th:href="@{/users/admin/promote/{id}(id=${u.id})}"
+                                   class="btn btn-danger btn-sm"
+                                   title="Promouvoir en Admin"
+                                   onclick="return confirm('Promouvoir cet utilisateur en Admin ?')">
+                                    <i class="fas fa-user-shield"></i>
+                                </a>
+                                <!-- Rétrograder en Client (Super Admin uniquement, sur un ADMIN non-super) -->
+                                <a th:if="${u.role == 'ADMIN'
+                                           and session.user.email == 'admin@admin.com'
+                                           and u.email != 'admin@admin.com'}"
+                                   th:href="@{/users/admin/demote/{id}(id=${u.id})}"
+                                   class="btn btn-secondary btn-sm"
+                                   title="Rétrograder en Client"
+                                   onclick="return confirm('Rétrograder cet admin en Client ?')">
+                                    <i class="fas fa-user-minus"></i>
+                                </a>
+                                <!-- Supprimer (pas le super admin) -->
+                                <button th:if="${u.email != 'admin@admin.com'}"
+                                        class="btn btn-danger btn-sm"
+                                        title="Supprimer"
+                                        th:onclick="'deleteUser(' + ${u.id} + ')'">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- Ligne vide -->
+                    <tr th:if="${users == null or users.empty}">
+                        <td colspan="7" class="text-center py-5">
+                            <i class="fas fa-users fa-4x text-muted mb-3 d-block"></i>
+                            <p class="text-muted">Aucun utilisateur trouvé</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- Modal Suppression -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger">
+                    <h5 class="modal-title text-white">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Confirmer la suppression
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-2">Êtes-vous sûr de vouloir supprimer cet utilisateur ?</p>
+                    <p class="text-danger fw-bold"><i class="fas fa-warning me-1"></i>Cette action est irréversible !</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Annuler
+                    </button>
+                    <a href="#" id="confirmDelete" class="btn btn-danger">
+                        <i class="fas fa-trash me-1"></i>Supprimer
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Filtre dynamique
+        function applyFilters() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const role   = document.getElementById('roleFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            document.querySelectorAll('#usersTable tbody tr[data-role]').forEach(row => {
+                const matchSearch = row.dataset.search.toLowerCase().includes(search);
+                const matchRole   = !role   || row.dataset.role   === role;
+                const matchStatus = !status || row.dataset.active === status;
+                row.style.display = (matchSearch && matchRole && matchStatus) ? '' : 'none';
+            });
+        }
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('roleFilter').value  = '';
+            document.getElementById('statusFilter').value = '';
+            applyFilters();
+        }
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+        document.getElementById('roleFilter').addEventListener('change', applyFilters);
+        document.getElementById('statusFilter').addEventListener('change', applyFilters);
+        // Suppression
+        function deleteUser(id) {
+            const baseUrl = window.location.pathname.split('/').slice(0,2).join('/');
+            document.getElementById('confirmDelete').href = baseUrl + '/users/admin/delete/' + id;
+            new bootstrap.Modal(document.getElementById('deleteModal')).show();
+        }
+        // Auto-fermeture alertes
+        setTimeout(() => {
+            document.querySelectorAll('.alert').forEach(a => {
+                bootstrap.Alert.getOrCreateInstance(a).close();
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

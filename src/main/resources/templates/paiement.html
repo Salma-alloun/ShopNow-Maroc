@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Paiement - E-Shop Maroc</title>
+    <!-- Context path dynamique pour les appels AJAX -->
+    <meta id="ctx" th:content="@{/}" content="/">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Stripe.js -->
+    <script src="https://js.stripe.com/v3/"></script>
+    
+    <!-- Styles supplémentaires pour le header et footer -->
+    <style>
+        /* Styles du header2 (copiés depuis votre fragment) */
+        .top-bar {
+            background: #2e4057;
+            color: white;
+            padding: 8px 0;
+            font-size: 0.9rem;
+        }
+        .top-bar .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 30px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+        .top-bar-social a {
+            color: white;
+            margin-left: 15px;
+            transition: color 0.3s;
+        }
+        .top-bar-social a:hover {
+            color: #ffc045;
+        }
+        .navbar-main {
+            background: white;
+            padding: 15px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .navbar-brand {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ff6b35, #f18f01);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+        .navbar-brand i {
+            background: linear-gradient(135deg, #ff6b35, #f18f01);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-right: 8px;
+        }
+        .nav-link {
+            color: #2e4057 !important;
+            font-weight: 600;
+            padding: 8px 20px !important;
+            border-radius: 50px;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        .nav-link:hover {
+            background: linear-gradient(135deg, #ff6b35, #f18f01);
+            color: white !important;
+        }
+        .nav-link i {
+            margin-right: 6px;
+        }
+        .nav-icons {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .nav-icon-item {
+            color: #2e4057;
+            font-size: 1.2rem;
+            transition: color 0.3s;
+            text-decoration: none;
+        }
+        .nav-icon-item:hover {
+            color: #ff6b35;
+        }
+        
+        /* Footer styles */
+        .footer-main {
+            background: #1a2b3c;
+            color: white;
+            padding: 60px 0 20px;
+            margin-top: 60px;
+        }
+        .footer-main .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 30px;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        .footer-col h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 10px;
+            color: white;
+        }
+        .footer-col h4::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(135deg, #ff6b35, #f18f01);
+            border-radius: 2px;
+        }
+        .footer-col ul {
+            list-style: none;
+            padding: 0;
+        }
+        .footer-col ul li {
+            margin-bottom: 12px;
+        }
+        .footer-col ul li a {
+            color: #b0b0b0;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .footer-col ul li a:hover {
+            color: #ffc045;
+            padding-left: 5px;
+        }
+        .footer-contact li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #b0b0b0;
+            margin-bottom: 15px;
+        }
+        .footer-contact i {
+            color: #ffc045;
+            width: 20px;
+        }
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: all 0.3s;
+        }
+        .social-links a:hover {
+            background: linear-gradient(135deg, #ff6b35, #f18f01);
+            transform: translateY(-3px);
+        }
+        .footer-bottom {
+            border-top: 1px solid #2a3a4c;
+            padding-top: 20px;
+            text-align: center;
+            color: #b0b0b0;
+        }
+        
+        /* Style original de la page paiement */
+        body {
+            background: #f5f5f5;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .payment-container {
+            max-width: 550px;
+            margin: 3rem auto;
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+        }
+        .order-summary {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+        .total-line {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #ff9900;
+        }
+        #card-element {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 14px;
+            margin: 1rem 0;
+            transition: border-color 0.3s;
+        }
+        #card-element.focused {
+            border-color: #667eea;
+        }
+        #card-errors {
+            color: #dc3545;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+        .btn-pay {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea, #ff9900);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .btn-pay:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102,126,234,0.4);
+        }
+        .btn-pay:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .secure-badge {
+            text-align: center;
+            color: #888;
+            font-size: 0.85rem;
+            margin-top: 1rem;
+        }
+        .spinner {
+            display: none;
+        }
+        .loading .spinner {
+            display: inline-block;
+        }
+        .loading .btn-text {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== HEADER2 ===== -->
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <div class="container">
+            <div class="top-bar-social">
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+    </div>
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-main">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">
+                <i class="fas fa-store"></i> ShopNow.ma
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/}">
+                            <i class="fas fa-home"></i> Accueil
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/catalogue}">
+                            <i class="fas fa-th"></i> Catalogue
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/promotions}">
+                            <i class="fas fa-tags"></i> Promos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/nouveautes}">
+                            <i class="fas fa-star"></i> Nouveautés
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/contact}">
+                            <i class="fas fa-headset"></i> Contact
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="nav-icons">
+                    <a th:href="@{/recherche}" class="nav-icon-item">
+                        <i class="fas fa-search"></i>
+                    </a>
+                    <a th:href="@{/favoris}" class="nav-icon-item">
+                        <i class="fas fa-heart"></i>
+                    </a>
+                    <a th:href="@{/panier}" class="nav-icon-item">
+                        <i class="fas fa-shopping-cart"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- Contenu principal (inchangé) -->
+    <div class="payment-container">
+        <h4 class="mb-3">
+            <i class="fas fa-lock text-warning me-2"></i>
+            Paiement sécurisé
+        </h4>
+        <!-- Récapitulatif commande -->
+        <div class="order-summary">
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Commande #</span>
+                <span th:text="${order.id}" class="fw-bold"></span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Articles</span>
+                <span th:text="${order.orderItems.size()}"></span>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between total-line">
+                <span>Total TTC</span>
+                <span th:text="${#numbers.formatDecimal(order.total, 1, 2)} + ' DH'"></span>
+            </div>
+        </div>
+        <!-- Formulaire Stripe -->
+        <div id="payment-form">
+            <label class="fw-bold mb-1">
+                <i class="fas fa-credit-card me-2 text-warning"></i>
+                Informations de carte
+            </label>
+            <div id="card-element"></div>
+            <div id="card-errors"></div>
+            <!-- Carte de test -->
+            <div class="alert alert-info mt-2 p-2" style="font-size:0.82rem;">
+                <strong>Test :</strong> Carte <code>4242 4242 4242 4242</code>
+                — Date future — CVC : <code>123</code>
+            </div>
+            <button id="btn-pay" class="btn-pay mt-3" th:data-order-id="${order.id}">
+                <span class="spinner spinner-border spinner-border-sm"></span>
+                <span class="btn-text">
+                    <i class="fas fa-lock me-2"></i>
+                    Payer <span th:text="${#numbers.formatDecimal(order.total, 1, 2)} + ' DH'"></span>
+                </span>
+            </button>
+        </div>
+        <div class="secure-badge mt-3">
+            <i class="fas fa-shield-alt me-1"></i>
+            Paiement sécurisé par Stripe — vos données ne transitent pas par nos serveurs
+        </div>
+    </div>
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer-main">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>ShopNow.ma</h4>
+                    <p style="color: #b0b0b0; line-height: 1.8;">Votre destination shopping en ligne au Maroc. Des milliers de produits aux meilleurs prix.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Liens rapides</h4>
+                    <ul>
+                        <li><a th:href="@{/catalogue}"><i class="fas fa-chevron-right"></i> Catalogue</a></li>
+                        <li><a th:href="@{/promotions}"><i class="fas fa-chevron-right"></i> Promotions</a></li>
+                        <li><a th:href="@{/nouveautes}"><i class="fas fa-chevron-right"></i> Nouveautés</a></li>
+                        <li><a th:href="@{/contact}"><i class="fas fa-chevron-right"></i> Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Informations</h4>
+                    <ul>
+                        <li><a th:href="@{/about}"><i class="fas fa-chevron-right"></i> Qui sommes-nous</a></li>
+                        <li><a th:href="@{/contact}"><i class="fas fa-chevron-right"></i> Contact</a></li>
+                        <li><a th:href="@{/faq}"><i class="fas fa-chevron-right"></i> FAQ</a></li>
+                        <li><a th:href="@{/livraison}"><i class="fas fa-chevron-right"></i> Livraison</a></li>
+                        <li><a th:href="@{/mentions-legales}"><i class="fas fa-chevron-right"></i> Mentions légales</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Contact</h4>
+                    <ul class="footer-contact">
+                        <li><i class="fas fa-map-marker-alt"></i> Casablanca, Maroc</li>
+                        <li><i class="fas fa-phone"></i> +212 5XX-XXXXXX</li>
+                        <li><i class="fas fa-envelope"></i> contact@shopnow.ma</li>
+                        <li><i class="fas fa-clock"></i> Lun-Ven: 9h-18h</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="payment-methods" style="display: flex; gap: 15px; justify-content: center; margin: 20px 0;">
+                <i class="fab fa-cc-visa fa-2x" style="color: #b0b0b0;"></i>
+                <i class="fab fa-cc-mastercard fa-2x" style="color: #b0b0b0;"></i>
+                <i class="fab fa-cc-paypal fa-2x" style="color: #b0b0b0;"></i>
+                <i class="fas fa-money-bill-wave fa-2x" style="color: #b0b0b0;"></i>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2026 ShopNow.ma - Tous droits réservés. Projet fil rouge AQL & Tests - Cycle ingénieur ILISI</p>
+                <p class="mt-2">E_COMMERCE</p>
+            </div>
+        </div>
+    </footer>
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script th:inline="javascript">
+        const STRIPE_PUBLIC_KEY = /*[[${stripePublicKey}]]*/ '';
+        const ORDER_ID          = /*[[${order.id}]]*/ 0;
+        // Récupérer le context path
+        const CTX = document.getElementById('ctx').content.replace(/\/$/, '');
+        const stripe   = Stripe(STRIPE_PUBLIC_KEY);
+        const elements = stripe.elements();
+        // Créer l'élément carte Stripe
+        const cardElement = elements.create('card', {
+            style: {
+                base: {
+                    fontSize: '16px', color: '#333',
+                    fontFamily: 'Segoe UI, sans-serif',
+                    '::placeholder': { color: '#aaa' }
+                },
+                invalid: { color: '#dc3545' }
+            }
+        });
+        cardElement.mount('#card-element');
+        cardElement.on('focus', () => document.getElementById('card-element').classList.add('focused'));
+        cardElement.on('blur',  () => document.getElementById('card-element').classList.remove('focused'));
+        cardElement.on('change', e => {
+            document.getElementById('card-errors').textContent = e.error ? e.error.message : '';
+        });
+        // Clic sur Payer
+        document.getElementById('btn-pay').addEventListener('click', async () => {
+            const btn = document.getElementById('btn-pay');
+            btn.disabled = true;
+            btn.classList.add('loading');
+            try {
+                // 1. Demander le clientSecret au serveur
+                const intentRes = await fetch(`${CTX}/paiement/creer-intent/${ORDER_ID}`, {
+                    method: 'POST'
+                });
+                if (!intentRes.ok) {
+                    showError('Erreur serveur (' + intentRes.status + ')');
+                    return;
+                }
+                const intentData = await intentRes.json();
+                if (intentData.error) {
+                    showError(intentData.error);
+                    return;
+                }
+                // 2. Confirmer le paiement
+                const { paymentIntent, error } = await stripe.confirmCardPayment(
+                    intentData.clientSecret,
+                    { payment_method: { card: cardElement } }
+                );
+                if (error) {
+                    showError(error.message);
+                    return;
+                }
+                if (paymentIntent.status === 'succeeded') {
+                    // 3. Notifier le serveur
+                    const confirmRes = await fetch(`${CTX}/paiement/confirmer/${ORDER_ID}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ paymentIntentId: paymentIntent.id })
+                    });
+                    if (!confirmRes.ok) {
+                        showError('Erreur serveur (' + confirmRes.status + ')');
+                        return;
+                    }
+                    const confirmData = await confirmRes.json();
+                    if (confirmData.success) {
+                        // ✅ Redirection
+                        window.location.href = CTX + confirmData.redirectUrl;
+                    } else {
+                        showError(confirmData.message || 'Erreur de confirmation');
+                    }
+                }
+            } catch (err) {
+                showError('Erreur réseau : ' + err.message);
+            } finally {
+                btn.classList.remove('loading');
+            }
+        });
+        function showError(msg) {
+            document.getElementById('card-errors').textContent = msg;
+            const btn = document.getElementById('btn-pay');
+            btn.disabled = false;
+            btn.classList.remove('loading');
+        }
+    </script>
+</body>
+</html>

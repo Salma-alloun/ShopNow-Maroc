@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Footer Fragment</title>
+</head>
+<body>
+    <!-- ===== FOOTER FRAGMENT ===== -->
+    <footer th:fragment="footer" class="footer-main">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>ShopNow.ma</h4>
+                    <p style="color: #b0b0b0; line-height: 1.8;">Votre destination shopping en ligne au Maroc. Des milliers de produits aux meilleurs prix.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Liens rapides</h4>
+                    <ul>
+                        <li><a th:href="@{/catalogue}"><i class="fas fa-chevron-right"></i> Catalogue</a></li>
+                        <li><a th:href="@{/promotions}"><i class="fas fa-chevron-right"></i> Promotions</a></li>
+                        <li><a th:href="@{/nouveautes}"><i class="fas fa-chevron-right"></i> Nouveautés</a></li>
+                        <li><a th:href="@{/contact}"><i class="fas fa-chevron-right"></i> Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Informations</h4>
+                    <ul>
+                        <li><a th:href="@{/about}"><i class="fas fa-chevron-right"></i> Qui sommes-nous</a></li>
+                        <li><a th:href="@{/contact}"><i class="fas fa-chevron-right"></i> Contact</a></li>
+                        <li><a th:href="@{/faq}"><i class="fas fa-chevron-right"></i> FAQ</a></li>
+                        <li><a th:href="@{/livraison}"><i class="fas fa-chevron-right"></i> Livraison</a></li>
+                        <li><a th:href="@{/mentions-legales}"><i class="fas fa-chevron-right"></i> Mentions légales</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Contact</h4>
+                    <ul class="footer-contact">
+                        <li><i class="fas fa-map-marker-alt"></i> Casablanca, Maroc</li>
+                        <li><i class="fas fa-phone"></i> +212 5XX-XXXXXX</li>
+                        <li><i class="fas fa-envelope"></i> contact@shopnow.ma</li>
+                        <li><i class="fas fa-clock"></i> Lun-Ven: 9h-18h</li>
+                        <li class="delivery-badge">
+                            <i class="fas fa-truck"></i> Livraison gratuite dès 300 DH
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="payment-methods">
+                <i class="fab fa-cc-visa" title="Visa"></i>
+                <i class="fab fa-cc-mastercard" title="Mastercard"></i>
+                <i class="fab fa-cc-paypal" title="PayPal"></i>
+                <i class="fas fa-money-bill-wave" title="Cash à la livraison"></i>
+                <i class="fas fa-credit-card" title="Carte bancaire"></i>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2026 ShopNow.ma - Tous droits réservés. Projet fil rouge AQL & Tests - Cycle ingénieur ILISI</p>
+                <p class="mt-2">E_COMMERCE</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

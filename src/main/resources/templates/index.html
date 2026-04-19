@@ -1,0 +1,518 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopNow Maroc - Votre e-commerce de confiance</title>
+    
+ 
+       <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+      <!--  CSS COMMUN  -->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+   
+</head>
+<body>
+    <!-- Inclusion des fragments  -->
+    <div th:replace="fragments/header2 :: topbar"></div>
+    <div th:replace="fragments/header2 :: navbar"></div> 
+    
+    <!-- ===== HERO SLIDER AVEC ARRIÈRE-PLAN ===== -->
+    <section class="hero-section">
+        <div class="hero-slider">
+            <div class="slide active" style="background-image: url('https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80')">
+                <div class="slide-overlay"></div>
+            </div>
+            <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1607082349566-187342175e2f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80')">
+                <div class="slide-overlay"></div>
+            </div>
+            <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1607082350899-7e105aa886ae?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80')">
+                <div class="slide-overlay"></div>
+            </div>
+        </div>
+        
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="hero-content">
+                        <span class="highlight" data-aos="fade-down">🔥 Jusqu'à -50% sur les nouveautés</span>
+                        <h1 data-aos="fade-right">Les meilleures offres <br>du e-commerce au Maroc</h1>
+                        <p data-aos="fade-right" data-aos-delay="100">Découvrez des milliers de produits aux prix imbattables. Livraison rapide partout au Maroc.</p>
+                        <div class="hero-buttons" data-aos="fade-up" data-aos-delay="200">
+                            <a th:href="@{/catalogue}" class="hero-btn-primary">
+                                <i class="fas fa-store"></i> Acheter maintenant
+                            </a>
+                            <a th:href="@{/promotions}" class="hero-btn-secondary">
+                                <i class="fas fa-gift"></i> Voir les offres
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="slider-controls">
+            <button class="slider-control" onclick="prevSlide()"><i class="fas fa-chevron-left"></i></button>
+            <button class="slider-control" onclick="nextSlide()"><i class="fas fa-chevron-right"></i></button>
+        </div>
+    </section>
+    <!-- ===== SEARCH SECTION ===== -->
+    <div class="container search-section">
+        <div class="search-container" data-aos="fade-up">
+            <form th:action="@{/catalogue/recherche}" method="get" class="search-box">
+                <input type="text" name="keyword" placeholder="Que cherchez-vous ? (Produit, marque, catégorie...)" required>
+                <select name="categorie">
+                    <option value="">Toutes les catégories</option>
+                    <option value="electronique">📱 Électronique</option>
+                    <option value="vetements">👕 Vêtements</option>
+                    <option value="maison">🏠 Maison</option>
+                    <option value="beaute">💄 Beauté</option>
+                    <option value="sports">⚽ Sports</option>
+                    <option value="livres">📚 Livres</option>
+                </select>
+                <button type="submit">
+                    <i class="fas fa-search"></i>
+                    <span>Rechercher</span>
+                </button>
+            </form>
+        </div>
+    </div>
+    <!-- ===== CATEGORIES SECTION ===== -->
+    <section class="categories-section">
+        <div class="container">
+            <div class="section-title" data-aos="fade-up">
+                <h2>Catégories populaires</h2>
+                <p>Découvrez nos produits par catégorie</p>
+            </div>
+            
+            <div class="categories-grid">
+                <a th:href="@{/catalogue?categorie=electronique}" class="category-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="category-icon">
+                        <i class="fas fa-laptop"></i>
+                    </div>
+                    <h3>Électronique</h3>
+                    <p>Smartphones, PC, TV, Audio</p>
+                </a>
+                
+                <a th:href="@{/catalogue?categorie=vetements}" class="category-card" data-aos="fade-up" data-aos-delay="150">
+                    <div class="category-icon">
+                        <i class="fas fa-tshirt"></i>
+                    </div>
+                    <h3>Mode</h3>
+                    <p>Vêtements, Chaussures, Accessoires</p>
+                </a>
+                
+                <a th:href="@{/catalogue?categorie=maison}" class="category-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="category-icon">
+                        <i class="fas fa-couch"></i>
+                    </div>
+                    <h3>Maison</h3>
+                    <p>Meubles, Décoration, Cuisine</p>
+                </a>
+                
+                <a th:href="@{/catalogue?categorie=beaute}" class="category-card" data-aos="fade-up" data-aos-delay="250">
+                    <div class="category-icon">
+                        <i class="fas fa-spa"></i>
+                    </div>
+                    <h3>Beauté</h3>
+                    <p>Cosmétiques, Soins, Parfums</p>
+                </a>
+                
+                <a th:href="@{/catalogue?categorie=sports}" class="category-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="category-icon">
+                        <i class="fas fa-futbol"></i>
+                    </div>
+                    <h3>Sports</h3>
+                    <p>Équipements, Vêtements de sport</p>
+                </a>
+                
+                <a th:href="@{/catalogue?categorie=livres}" class="category-card" data-aos="fade-up" data-aos-delay="350">
+                    <div class="category-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <h3>Livres</h3>
+                    <p>Romans, BD, Manuels</p>
+                </a>
+            </div>
+        </div>
+    </section>
+    <!-- ===== FEATURED PRODUCTS ===== -->
+    <section class="featured-section">
+        <div class="container">
+            <div class="section-title" data-aos="fade-up">
+                <h2>Produits en vedette</h2>
+                <p>Les produits les plus populaires du moment</p>
+            </div>
+            
+            <div class="products-grid">
+                <!-- Produit 1 -->
+                <div class="product-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="product-badge">
+                        <span class="badge-new">Nouveau</span>
+                    </div>
+                    <div class="product-wishlist" onclick="event.stopPropagation(); toggleWishlist(this)">
+                        <i class="far fa-heart"></i>
+                    </div>
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1546868871-0f9367933c3a?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Smartphone XYZ Pro">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">Électronique</div>
+                        <h3 class="product-title">Smartphone XYZ Pro</h3>
+                        <div class="product-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                            <span>(124 avis)</span>
+                        </div>
+                        <div class="product-price">
+                            4 999 DH <del>6 499 DH</del>
+                        </div>
+                        <span class="product-link">Voir le produit <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+                
+                <!-- Produit 2 -->
+                <div class="product-card" data-aos="fade-up" data-aos-delay="150">
+                    <div class="product-badge">
+                        <span class="badge-sale">-30%</span>
+                    </div>
+                    <div class="product-wishlist" onclick="event.stopPropagation(); toggleWishlist(this)">
+                        <i class="far fa-heart"></i>
+                    </div>
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1586495777744-4413f21062fa?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Veste en cuir">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">Mode</div>
+                        <h3 class="product-title">Veste en cuir homme</h3>
+                        <div class="product-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <span>(89 avis)</span>
+                        </div>
+                        <div class="product-price">
+                            899 DH <del>1 299 DH</del>
+                        </div>
+                        <span class="product-link">Voir le produit <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+                
+                <!-- Produit 3 -->
+                <div class="product-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="product-wishlist" onclick="event.stopPropagation(); toggleWishlist(this)">
+                        <i class="far fa-heart"></i>
+                    </div>
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Montre connectée">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">Beauté</div>
+                        <h3 class="product-title">Montre connectée</h3>
+                        <div class="product-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                            <span>(256 avis)</span>
+                        </div>
+                        <div class="product-price">
+                            1 299 DH
+                        </div>
+                        <span class="product-link">Voir le produit <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+                
+                <!-- Produit 4 -->
+                <div class="product-card" data-aos="fade-up" data-aos-delay="250">
+                    <div class="product-badge">
+                        <span class="badge-new">Nouveau</span>
+                    </div>
+                    <div class="product-wishlist" onclick="event.stopPropagation(); toggleWishlist(this)">
+                        <i class="far fa-heart"></i>
+                    </div>
+                    <div class="product-image">
+                        <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Casque audio">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">Audio</div>
+                        <h3 class="product-title">Casque sans fil premium</h3>
+                        <div class="product-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <span>(67 avis)</span>
+                        </div>
+                        <div class="product-price">
+                            799 DH <del>999 DH</del>
+                        </div>
+                        <span class="product-link">Voir le produit <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-5" data-aos="fade-up">
+                <a th:href="@{/catalogue}" class="btn-gradient">
+                    <i class="fas fa-arrow-right"></i>
+                    Voir tous les produits
+                </a>
+            </div>
+        </div>
+    </section>
+    <!-- ===== PROMO BANNER ===== -->
+    <section class="promo-banner">
+        <div class="container">
+            <div class="promo-content" data-aos="zoom-in">
+                <h2>🔥 Offre Flash -50%</h2>
+                <p>Sur une sélection de produits. Ne ratez pas cette occasion unique !</p>
+                <div class="promo-code">
+                    FLASH50
+                </div>
+                <div class="mt-4">
+                    <a th:href="@{/promotions}" class="hero-btn-secondary">
+                        <i class="fas fa-bolt"></i> Profiter de l'offre
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- ===== FEATURES ===== -->
+    <section class="features-section">
+        <div class="container">
+            <div class="section-title" data-aos="fade-up">
+                <h2>Nos avantages</h2>
+                <p>Pourquoi choisir ShopNow.ma ?</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-item" data-aos="fade-up" data-aos-delay="100">
+                    <div class="feature-icon">
+                        <i class="fas fa-truck"></i>
+                    </div>
+                    <h3>Livraison rapide</h3>
+                    <p>Livraison en 24/48h partout au Maroc avec suivi en temps réel</p>
+                </div>
+                
+                <div class="feature-item" data-aos="fade-up" data-aos-delay="150">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Paiement sécurisé</h3>
+                    <p>Transactions 100% sécurisées avec cryptage SSL</p>
+                </div>
+                
+                <div class="feature-item" data-aos="fade-up" data-aos-delay="200">
+                    <div class="feature-icon">
+                        <i class="fas fa-undo-alt"></i>
+                    </div>
+                    <h3>Retours gratuits</h3>
+                    <p>Retours sous 15 jours, satisfait ou remboursé</p>
+                </div>
+                
+                <div class="feature-item" data-aos="fade-up" data-aos-delay="250">
+                    <div class="feature-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h3>Support 24/7</h3>
+                    <p>Service client disponible 7j/7 pour vous assister</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- ===== TESTIMONIALS ===== -->
+    <section class="testimonials-section">
+        <div class="container">
+            <div class="section-title" data-aos="fade-up">
+                <h2>Ce que disent nos clients</h2>
+                <p>Plus de 10 000 clients satisfaits</p>
+            </div>
+            
+            <div class="testimonials-grid">
+                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="testimonial-text">
+                        "Excellente expérience d'achat ! Livraison ultra rapide et produits de qualité. Je recommande vivement !"
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">S</div>
+                        <div class="author-info">
+                            <h5>Sarah B.</h5>
+                            <span>Casablanca</span>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="150">
+                    <div class="testimonial-text">
+                        "Le service client est vraiment réactif et professionnel. J'ai eu un problème avec ma commande et tout a été résolu en quelques heures."
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">M</div>
+                        <div class="author-info">
+                            <h5>Mohammed R.</h5>
+                            <span>Rabat</span>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="testimonial-text">
+                        "Les prix sont très compétitifs et la livraison gratuite est un vrai plus. Je commande régulièrement sur ce site."
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">F</div>
+                        <div class="author-info">
+                            <h5>Fatima Z.</h5>
+                            <span>Marrakech</span>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- ===== NEWSLETTER ===== -->
+    <section class="newsletter-section">
+        <div class="container">
+            <div class="newsletter-content" data-aos="fade-up">
+                <h2>Inscrivez-vous à notre newsletter</h2>
+                <p>Recevez nos offres exclusives et les dernières nouveautés en avant-première</p>
+                <form class="newsletter-form" th:action="@{/newsletter/subscribe}" method="post">
+                    <input type="email" name="email" placeholder="Votre adresse email" required>
+                    <button type="submit">
+                        <i class="fas fa-paper-plane"></i> S'abonner
+                    </button>
+                </form>
+                <small class="d-block mt-3">En vous inscrivant, vous acceptez de recevoir nos offres promotionnelles</small>
+            </div>
+        </div>
+    </section>
+    <!-- Inclusion du footer -->
+    <div th:replace="fragments/footer :: footer"></div>
+   <!-- À la fin de votre index.html, REMPLACEZ tous les scripts après les inclusions par ceci : -->
+<!-- Scripts  -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    // Initialize AOS
+    AOS.init({
+        duration: 1000,
+        once: true,
+        offset: 100
+    });
+    // Navbar scroll effect
+    window.addEventListener('scroll', function() {
+        const navbar = document.getElementById('mainNavbar');
+        if (navbar) {
+            navbar.classList.toggle('scrolled', window.scrollY > 100);
+        }
+    });
+    // Hero Slider
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    
+    function showSlide(index) {
+        slides.forEach(slide => slide.classList.remove('active'));
+        slides[index]?.classList.add('active');
+    }
+    
+    function nextSlide() {
+        if (slides.length) {
+            currentSlide = (currentSlide + 1) % slides.length;
+            showSlide(currentSlide);
+        }
+    }
+    
+    function prevSlide() {
+        if (slides.length) {
+            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+            showSlide(currentSlide);
+        }
+    }
+    
+    if (slides.length) setInterval(nextSlide, 5000);
+    // Menu utilisateur
+    window.toggleUserMenu = function() {
+        const dropdown = document.getElementById('userDropdown');
+        if (dropdown) {
+            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+        }
+    };
+    // Fermer le menu en cliquant ailleurs
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('.fa-user-circle')) {
+            const dropdown = document.getElementById('userDropdown');
+            if (dropdown) dropdown.style.display = 'none';
+        }
+    });
+    // Wishlist toggle
+    window.toggleWishlist = function(element) {
+        const icon = element.querySelector('i');
+        if (icon) {
+            icon.classList.toggle('far');
+            icon.classList.toggle('fas');
+            icon.style.color = icon.classList.contains('fas') ? '#ff6b35' : '';
+        }
+    };
+    // Mise à jour du compteur panier
+    function updateCartCount() {
+        const cartBadge = document.getElementById('cartCount');
+        if (!cartBadge) return;
+        
+        const isLoggedIn = !!document.querySelector('[th\\:if="${session.user != null}"]') || 
+                          document.querySelector('a[href*="logout"]') !== null;
+        
+        if (isLoggedIn) {
+            fetch('/WebMVCRepo-master/panier/count')
+                .then(res => res.json())
+                .then(data => {
+                    cartBadge.textContent = data.count || 0;
+                    cartBadge.style.display = data.count > 0 ? 'block' : 'none';
+                })
+                .catch(() => {});
+        } else {
+            try {
+                const cart = JSON.parse(localStorage.getItem('visitorCart'));
+                const total = cart?.items?.reduce((s, i) => s + i.quantity, 0) || 0;
+                cartBadge.textContent = total;
+                cartBadge.style.display = total > 0 ? 'block' : 'none';
+            } catch {}
+        }
+    }
+    document.addEventListener('DOMContentLoaded', updateCartCount);
+    window.addEventListener('storage', updateCartCount);
+</script>
+</body>
+</html>

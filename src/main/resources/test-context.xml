@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context.xsd
+           http://www.springframework.org/schema/tx
+           http://www.springframework.org/schema/tx/spring-tx.xsd
+           http://www.springframework.org/schema/data/jpa
+           http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
+    <!-- Scan des composants pour les services et repositories -->
+    <context:component-scan base-package="ma.fstm.ilisi.projects.webmvc">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+        <context:exclude-filter type="annotation" expression="org.springframework.web.bind.annotation.RestController"/>
+    </context:component-scan>
+    <!-- Configuration de la base de données H2 pour les tests -->
+    <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="org.h2.Driver" />
+        <property name="url" value="jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=MySQL" />
+        <property name="username" value="sa" />
+        <property name="password" value="" />
+        <property name="initialSize" value="5" />
+        <property name="maxTotal" value="10" />
+    </bean>
+    <!-- EntityManagerFactory -->
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="packagesToScan" value="ma.fstm.ilisi.projects.webmvc.bo" />
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+                <property name="databasePlatform" value="org.hibernate.dialect.H2Dialect" />
+                <property name="showSql" value="true" />
+                <property name="generateDdl" value="true" />
+            </bean>
+        </property>
+        <property name="jpaProperties">
+            <props>
+                <prop key="hibernate.hbm2ddl.auto">create-drop</prop>
+                <prop key="hibernate.format_sql">true</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.use_sql_comments">true</prop>
+            </props>
+        </property>
+    </bean>
+    <!-- Transaction Manager -->
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory" />
+    </bean>
+    <!-- Activation des transactions -->
+    <tx:annotation-driven transaction-manager="transactionManager" />
+    <!-- JPA Repositories -->
+    <jpa:repositories base-package="ma.fstm.ilisi.projects.webmvc.repository" />
+    <!-- Bean pour les propriétés Stripe (mock pour les tests) -->
+    <bean id="stripeSecretKey" class="java.lang.String">
+        <constructor-arg value="sk_test_mock_key_for_tests" />
+    </bean>
+    <bean id="stripePublicKey" class="java.lang.String">
+        <constructor-arg value="pk_test_mock_key_for_tests" />
+    </bean>
+</beans>

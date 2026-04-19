@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - ShopNow Maroc</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- CSS COMMUN (navbar, topbar) -->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <style>
+        /* ===== VARIABLES ===== */
+        :root {
+            --orange:       #ff6b35;
+            --orange2:      #f18f01;
+            --yellow:       #ffc045;
+            --yellow2:      #ffe45c;
+            --blue:         #2e4057;
+            --blue-dark:    #1a2b3c;
+            --gray-bg:      #f7f7f7;
+            --white:        #ffffff;
+            --text:         #2d2d2d;
+            --green:        #4caf50;
+            --shadow-sm:    0 5px 15px rgba(0,0,0,0.05);
+            --shadow-md:    0 10px 25px rgba(0,0,0,0.1);
+            --shadow-lg:    0 15px 35px rgba(0,0,0,0.15);
+            --grad-orange:  linear-gradient(135deg, #ff6b35, #f18f01);
+            --grad-yellow:  linear-gradient(135deg, #ffc045, #ffe45c);
+            --sidebar-w:    300px;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--gray-bg);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+        /* ===== BOUTON FLOTTANT POUR OUVRIR LA SIDEBAR ===== */
+        /* Visible en permanence en haut à droite */
+        .sidebar-toggle-btn {
+            position: fixed;
+            top: 120px;           /* sous le header sticky */
+            right: 0;
+            z-index: 1100;
+            background: var(--grad-orange);
+            color: white;
+            border: none;
+            padding: 14px 10px;
+            border-radius: 12px 0 0 12px;
+            cursor: pointer;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            font-family: 'Montserrat', sans-serif;
+            transition: all 0.3s;
+            writing-mode: vertical-lr;
+            letter-spacing: 1px;
+        }
+        .sidebar-toggle-btn:hover {
+            padding-right: 14px;
+            box-shadow: var(--shadow-lg);
+        }
+        .sidebar-toggle-btn i {
+            font-size: 1.1rem;
+            writing-mode: horizontal-tb;
+        }
+        /* Quand sidebar ouverte, le bouton disparaît */
+        .sidebar-toggle-btn.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        /* ===== OVERLAY (fond sombre quand sidebar ouverte) ===== */
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.35);
+            z-index: 1150;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .sidebar-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        /* ===== SIDEBAR DROITE ===== */
+        .admin-sidebar {
+            position: fixed;
+            top: 0;
+            right: -var(--sidebar-w);   /* caché à droite */
+            right: calc(-1 * var(--sidebar-w));
+            width: var(--sidebar-w);
+            height: 100vh;
+            background: var(--blue-dark);
+            z-index: 1200;
+            overflow-y: auto;
+            transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            box-shadow: -10px 0 40px rgba(0,0,0,0.3);
+        }
+        /* Sidebar ouverte */
+        .admin-sidebar.open {
+            right: 0;
+        }
+        /* ===== EN-TÊTE SIDEBAR ===== */
+        .sidebar-header {
+            background: var(--grad-orange);
+            padding: 20px 20px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .sidebar-header-title {
+            color: white;
+            font-size: 1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .sidebar-close-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+        .sidebar-close-btn:hover {
+            background: rgba(255,255,255,0.35);
+        }
+        /* ===== SECTIONS DE LA SIDEBAR ===== */
+        .sidebar-body {
+            flex: 1;
+            padding: 16px 0;
+        }
+        /* Titre de section (ex: Gestion Produits) */
+        .sidebar-section-title {
+            padding: 12px 20px 8px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #8899aa;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .sidebar-section-title i {
+            color: var(--orange);
+            font-size: 0.85rem;
+        }
+        /* Lien dans la sidebar */
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 20px 11px 30px;
+            color: #b0bec5;
+            text-decoration: none;
+            font-size: 0.88rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+        .sidebar-link:hover {
+            background: rgba(255,255,255,0.06);
+            color: white;
+            border-left-color: var(--orange);
+        }
+        .sidebar-link i {
+            width: 18px;
+            color: var(--orange);
+            font-size: 0.9rem;
+        }
+        /* Séparateur entre sections */
+        .sidebar-divider {
+            height: 1px;
+            background: rgba(255,255,255,0.07);
+            margin: 10px 20px;
+        }
+        /* ===== PIED SIDEBAR ===== */
+        .sidebar-footer {
+            padding: 16px 20px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+        .sidebar-logout {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            background: rgba(255,107,53,0.15);
+            color: var(--orange);
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.88rem;
+            transition: background 0.2s;
+        }
+        .sidebar-logout:hover {
+            background: rgba(255,107,53,0.3);
+            color: var(--orange);
+        }
+        /* ===== DASHBOARD CONTENT ===== */
+        .dashboard-container {
+            max-width: 1300px;
+            margin: 2rem auto;
+            padding: 0 2rem 4rem;
+            /* Pas de décalage : le contenu reste centré, la sidebar est en overlay */
+        }
+        /* En-tête dashboard */
+        .dashboard-header {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-md);
+            border-left: 5px solid var(--orange);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .dashboard-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--blue);
+            margin-bottom: 0.4rem;
+        }
+        .dashboard-header h1 i { color: var(--orange); }
+        .dashboard-header p { color: #666; font-size: 1rem; }
+        .admin-badge-header {
+            background: var(--grad-orange);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+        /* ===== CARTES STATISTIQUES ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 18px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-md);
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border-left: 5px solid var(--orange);
+        }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); }
+        .stat-card.green { border-left-color: var(--green); }
+        .stat-card.yellow { border-left-color: var(--yellow); }
+        .stat-card.blue  { border-left-color: var(--blue); }
+        .stat-icon {
+            width: 56px; height: 56px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.6rem;
+        }
+        .stat-icon.orange { background: rgba(255,107,53,0.1); color: var(--orange); }
+        .stat-icon.green  { background: rgba(76,175,80,0.1);  color: var(--green);  }
+        .stat-icon.yellow { background: rgba(255,192,69,0.1); color: var(--yellow); }
+        .stat-icon.blue   { background: rgba(46,64,87,0.1);   color: var(--blue);   }
+        .stat-info h3 { font-size: 1.8rem; font-weight: 700; color: var(--blue); margin-bottom: 0.2rem; }
+        .stat-info p  { color: #888; font-size: 0.9rem; margin: 0; }
+        /* ===== ACTIONS RAPIDES ===== */
+        .section-heading {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--blue);
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-heading i { color: var(--orange); }
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+        .action-card {
+            background: white;
+            border-radius: 18px;
+            padding: 2rem 1rem;
+            text-align: center;
+            text-decoration: none;
+            color: var(--blue);
+            transition: all 0.3s;
+            box-shadow: var(--shadow-md);
+            border: 2px solid transparent;
+        }
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--orange);
+            color: var(--blue);
+        }
+        .action-icon {
+            width: 65px; height: 65px;
+            background: var(--grad-yellow);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.8rem;
+            color: var(--blue);
+            transition: transform 0.3s;
+        }
+        .action-card:hover .action-icon { transform: scale(1.1) rotate(5deg); }
+        .action-card h4 { font-size: 1rem; font-weight: 600; margin-bottom: 0.4rem; }
+        .action-card p  { font-size: 0.82rem; color: #888; }
+        /* ===== TABLEAU UTILISATEURS RÉCENTS ===== */
+        .recent-section {
+            background: white;
+            border-radius: 18px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+        }
+        .recent-section h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--blue);
+            margin-bottom: 1.2rem;
+        }
+        .recent-section h3 i { color: var(--orange); margin-right: 8px; }
+        .user-table { width: 100%; border-collapse: collapse; }
+        .user-table th {
+            text-align: left; padding: 12px 14px;
+            background: var(--gray-bg);
+            color: var(--blue); font-weight: 600; font-size: 0.85rem;
+        }
+        .user-table td { padding: 12px 14px; border-bottom: 1px solid #f0f0f0; font-size: 0.9rem; }
+        .user-table tr:hover td { background: #fafafa; }
+        /* Badges rôle / statut */
+        .role-badge, .status-badge {
+            padding: 4px 12px; border-radius: 50px;
+            font-size: 0.78rem; font-weight: 600;
+        }
+        .role-admin   { background: rgba(255,107,53,0.12); color: var(--orange); }
+        .role-client  { background: rgba(76,175,80,0.12);  color: var(--green);  }
+        .role-visitor { background: rgba(255,192,69,0.12); color: #c8a000;       }
+        .status-active   { background: rgba(76,175,80,0.12); color: var(--green); }
+        .status-inactive { background: rgba(255,107,53,0.12); color: var(--orange); }
+        .btn-view {
+            padding: 5px 14px; border-radius: 50px;
+            background: var(--grad-orange); color: white;
+            text-decoration: none; font-size: 0.82rem; font-weight: 600;
+            transition: all 0.2s;
+        }
+        .btn-view:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); color: white; }
+        /* ===== GRAPHIQUES / STATS ===== */
+        .charts-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .chart-card {
+            background: white;
+            border-radius: 18px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-md);
+        }
+        .chart-card h3 { font-size: 1rem; font-weight: 700; color: var(--blue); margin-bottom: 1rem; }
+        .mini-table { width: 100%; }
+        .mini-table td { padding: 8px 0; border-bottom: 1px dashed #eee; font-size: 0.9rem; }
+        .mini-table td:last-child { text-align: right; font-weight: 600; color: var(--orange); }
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .dashboard-container { padding: 0 1rem 3rem; }
+            .charts-row { grid-template-columns: 1fr; }
+            .dashboard-header { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== HEADER COMMUN (même que les autres pages) ===== -->
+    <div th:replace="fragments/header :: topbar"></div>
+    <div th:replace="fragments/header :: navbar"></div>
+    <!-- ===== BOUTON FLOTTANT : ouvrir la sidebar ===== -->
+    <button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="openSidebar()" title="Menu Admin">
+        <i class="fas fa-cogs"></i>
+        Admin
+    </button>
+    <!-- ===== OVERLAY sombre derrière la sidebar ===== -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+    <!-- ===== SIDEBAR DROITE ===== -->
+    <div class="admin-sidebar" id="adminSidebar">
+        <!-- En-tête sidebar -->
+        <div class="sidebar-header">
+            <div class="sidebar-header-title">
+                <i class="fas fa-shield-alt"></i>
+                Panneau Admin
+            </div>
+            <button class="sidebar-close-btn" onclick="closeSidebar()" title="Fermer">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <!-- Corps sidebar -->
+        <div class="sidebar-body">
+            <!-- ===== SECTION : PRODUITS ===== -->
+            <div class="sidebar-section-title">
+                <i class="fas fa-box-open"></i>
+                Gestion des produits
+            </div>
+            <a th:href="@{/admin/products}" class="sidebar-link">
+                <i class="fas fa-list"></i> Tous les produits
+            </a>
+            <a th:href="@{/admin/products?action=add}" class="sidebar-link">
+                <i class="fas fa-plus-circle"></i> Ajouter un produit
+            </a>
+            <a th:href="@{/admin/products?inStock=true}" class="sidebar-link">
+                <i class="fas fa-check-circle"></i> Produits en stock
+            </a>
+            <a th:href="@{/admin/products?inStock=false}" class="sidebar-link">
+                <i class="fas fa-exclamation-triangle"></i> Rupture de stock
+            </a>
+            <div class="sidebar-divider"></div>
+            <!-- ===== SECTION : CATÉGORIES ===== -->
+            <div class="sidebar-section-title">
+                <i class="fas fa-tags"></i>
+                Gestion des catégories
+            </div>
+            <a th:href="@{/admin/categories}" class="sidebar-link">
+                <i class="fas fa-list"></i> Toutes les catégories
+            </a>
+            <a th:href="@{/admin/categories?action=add}" class="sidebar-link">
+                <i class="fas fa-plus-circle"></i> Ajouter une catégorie
+            </a>
+            <div class="sidebar-divider"></div>
+            <!-- ===== SECTION : COMMANDES ===== -->
+            <div class="sidebar-section-title">
+                <i class="fas fa-shopping-bag"></i>
+                Gestion des commandes
+            </div>
+            <a th:href="@{/admin/orders/list}" class="sidebar-link">
+                <i class="fas fa-list"></i> Toutes les commandes
+            </a>
+            <a th:href="@{/admin/orders/pending}" class="sidebar-link">
+                <i class="fas fa-clock"></i> En attente
+            </a>
+            <a th:href="@{/admin/orders/paid}" class="sidebar-link">
+                <i class="fas fa-check-circle"></i> Payées
+            </a>
+            <div class="sidebar-divider"></div>
+            <!-- ===== SECTION : UTILISATEURS ===== -->
+            <div class="sidebar-section-title">
+                <i class="fas fa-users"></i>
+                Gestion des utilisateurs
+            </div>
+            <a th:href="@{/users/admin/list}" class="sidebar-link">
+                <i class="fas fa-list"></i> Liste des utilisateurs
+            </a>
+            <a th:href="@{/users/admin/create}" class="sidebar-link">
+                <i class="fas fa-user-plus"></i> Créer un utilisateur
+            </a>
+            <div class="sidebar-divider"></div>
+            <!-- ===== SECTION : STATISTIQUES ===== -->
+            <div class="sidebar-section-title">
+                <i class="fas fa-chart-bar"></i>
+                Statistiques
+            </div>
+            <a th:href="@{/admin/stats/sales}" class="sidebar-link">
+                <i class="fas fa-chart-line"></i> Ventes
+            </a>
+            <a th:href="@{/admin/stats/products}" class="sidebar-link">
+                <i class="fas fa-star"></i> Produits populaires
+            </a>
+            <div class="sidebar-divider"></div>
+            <!-- ===== SECTION : PARAMÈTRES ===== -->
+            <div class="sidebar-section-title">
+                <i class="fas fa-cog"></i>
+                Paramètres
+            </div>
+            <a th:href="@{/admin/settings/general}" class="sidebar-link">
+                <i class="fas fa-sliders-h"></i> Généraux
+            </a>
+            <a th:href="@{/admin/settings/payment}" class="sidebar-link">
+                <i class="fas fa-credit-card"></i> Paiement
+            </a>
+        </div><!-- /sidebar-body -->
+        <!-- Pied sidebar : déconnexion -->
+        <div class="sidebar-footer">
+            <a th:href="@{/users/logout}" class="sidebar-logout">
+                <i class="fas fa-sign-out-alt"></i> Déconnexion
+            </a>
+        </div>
+    </div><!-- /admin-sidebar -->
+    <!-- ===== CONTENU DASHBOARD ===== -->
+    <div class="dashboard-container">
+        <!-- En-tête -->
+        <div class="dashboard-header" data-aos="fade-down">
+            <div>
+                <h1>
+                    <i class="fas fa-chart-line"></i>
+                    Tableau de bord
+                </h1>
+                <p>
+                    Bienvenue,
+                    <strong th:text="${session.user.firstName}">Admin</strong>.
+                    Gérez votre boutique depuis cet espace.
+                </p>
+            </div>
+            <span class="admin-badge-header">
+                <i class="fas fa-shield-alt"></i> Accès administrateur
+            </span>
+        </div>
+        <!-- ===== STATISTIQUES ===== -->
+        <div class="stats-grid">
+            <div class="stat-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="stat-icon orange"><i class="fas fa-users"></i></div>
+                <div class="stat-info">
+                    <h3 th:text="${totalUsers}">150</h3>
+                    <p>Total utilisateurs</p>
+                </div>
+            </div>
+            <div class="stat-card green" data-aos="fade-up" data-aos-delay="150">
+                <div class="stat-icon green"><i class="fas fa-user-tie"></i></div>
+                <div class="stat-info">
+                    <h3 th:text="${totalAdmins}">3</h3>
+                    <p>Administrateurs</p>
+                </div>
+            </div>
+            <div class="stat-card yellow" data-aos="fade-up" data-aos-delay="200">
+                <div class="stat-icon yellow"><i class="fas fa-user"></i></div>
+                <div class="stat-info">
+                    <h3 th:text="${totalClients}">120</h3>
+                    <p>Clients</p>
+                </div>
+            </div>
+            <div class="stat-card blue" data-aos="fade-up" data-aos-delay="250">
+                <div class="stat-icon blue"><i class="fas fa-box"></i></div>
+                <div class="stat-info">
+                    <h3 th:text="${totalProducts != null ? totalProducts : 0}">450</h3>
+                    <p>Produits</p>
+                </div>
+            </div>
+        </div>
+        <!-- ===== ACTIONS RAPIDES ===== -->
+        <div class="section-heading" data-aos="fade-right">
+            <i class="fas fa-bolt"></i> Actions rapides
+        </div>
+        <div class="actions-grid">
+            <a th:href="@{/admin/products}" class="action-card" data-aos="zoom-in" data-aos-delay="100">
+                <div class="action-icon"><i class="fas fa-box"></i></div>
+                <h4>Produits</h4>
+                <p>Gérer le catalogue</p>
+            </a>
+            <a th:href="@{/admin/categories}" class="action-card" data-aos="zoom-in" data-aos-delay="150">
+                <div class="action-icon"><i class="fas fa-tags"></i></div>
+                <h4>Catégories</h4>
+                <p>Gérer les catégories</p>
+            </a>
+            <a th:href="@{/users/admin/list}" class="action-card" data-aos="zoom-in" data-aos-delay="200">
+                <div class="action-icon"><i class="fas fa-users"></i></div>
+                <h4>Utilisateurs</h4>
+                <p>Gérer les comptes</p>
+            </a>
+            <a th:href="@{/admin/orders/pending}" class="action-card" data-aos="zoom-in" data-aos-delay="250">
+                <div class="action-icon"><i class="fas fa-clock"></i></div>
+                <h4>Commandes</h4>
+                <p>Traiter les commandes</p>
+            </a>
+        </div>
+        <!-- ===== STATISTIQUES PAR RÔLE ET PAYS ===== -->
+        <div class="charts-row" data-aos="fade-up">
+            <div class="chart-card">
+                <h3><i class="fas fa-chart-pie" style="color:var(--orange);margin-right:8px;"></i>Répartition par rôle</h3>
+                <table class="mini-table">
+                    <tr th:each="stat : ${usersByRole}">
+                        <td th:text="${stat[0]}">CLIENT</td>
+                        <td th:text="${stat[1]}">120</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="chart-card">
+                <h3><i class="fas fa-globe" style="color:var(--orange);margin-right:8px;"></i>Répartition par pays</h3>
+                <table class="mini-table">
+                    <tr th:each="stat : ${usersByCountry}">
+                        <td th:text="${stat[0]}">Maroc</td>
+                        <td th:text="${stat[1]}">80</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <!-- ===== DERNIERS UTILISATEURS ===== -->
+        <div class="recent-section" data-aos="fade-up">
+            <h3>
+                <i class="fas fa-user-plus"></i>
+                Derniers utilisateurs inscrits
+            </h3>
+            <div class="table-responsive">
+                <table class="user-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom complet</th>
+                            <th>Email</th>
+                            <th>Rôle</th>
+                            <th>Statut</th>
+                            <th>Inscrit le</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="user : ${recentUsers}">
+                            <td th:text="${user.id}">1</td>
+                            <td th:text="${user.fullName}">Ahmed Alaoui</td>
+                            <td th:text="${user.email}">ahmed@email.com</td>
+                            <td>
+                                <span class="role-badge"
+                                      th:classappend="${user.role == 'ADMIN'} ? 'role-admin' : (${user.role == 'CLIENT'} ? 'role-client' : 'role-visitor')"
+                                      th:text="${user.role}">CLIENT</span>
+                            </td>
+                            <td>
+                                <span class="status-badge"
+                                      th:classappend="${user.active} ? 'status-active' : 'status-inactive'"
+                                      th:text="${user.active} ? 'Actif' : 'Inactif'">Actif</span>
+                            </td>
+                            <td th:text="${#dates.format(user.createdAt, 'dd/MM/yyyy')}">01/03/2026</td>
+                            <td>
+                                <a th:href="@{/users/admin/edit/{id}(id=${user.id})}" class="btn-view">
+                                    <i class="fas fa-eye"></i> Voir
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div><!-- /dashboard-container -->
+    <!-- ===== FOOTER ===== -->
+    <div th:replace="fragments/footer :: footer"></div>
+    <!-- ===== SCRIPTS ===== -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // ===== Initialisation AOS =====
+        AOS.init({ duration: 900, once: true, offset: 80 });
+        // ===== Effet scroll navbar =====
+        window.addEventListener('scroll', function() {
+            const nav = document.getElementById('mainNavbar');
+            if (nav) nav.classList.toggle('scrolled', window.scrollY > 100);
+        });
+        // ===== Menu dropdown utilisateur (header) =====
+        window.toggleUserMenu = function() {
+            const d = document.getElementById('userDropdown');
+            if (d) d.style.display = d.style.display === 'none' ? 'block' : 'none';
+        };
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('[onclick="toggleUserMenu()"]')) {
+                const d = document.getElementById('userDropdown');
+                if (d) d.style.display = 'none';
+            }
+        });
+        // ===== SIDEBAR : ouvrir =====
+        function openSidebar() {
+            document.getElementById('adminSidebar').classList.add('open');
+            document.getElementById('sidebarOverlay').classList.add('active');
+            document.getElementById('sidebarToggleBtn').classList.add('hidden');
+            document.body.style.overflow = 'hidden'; // empêche le scroll derrière
+        }
+        // ===== SIDEBAR : fermer =====
+        function closeSidebar() {
+            document.getElementById('adminSidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('active');
+            document.getElementById('sidebarToggleBtn').classList.remove('hidden');
+            document.body.style.overflow = '';
+        }
+        // ===== Fermer avec la touche Échap =====
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeSidebar();
+        });
+    </script>
+</body>
+</html>
